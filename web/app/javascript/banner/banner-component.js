@@ -15,6 +15,24 @@ class Banner extends BaseComponent {
       window.globals.handleAccountSwitch(window.appState.UserPrimaryAccount);
     };
 
+    window.goCore.setBannerStateFromExternal = (state) => {
+      window.appState.Banner = state;
+      this.setComponentState(window.appState.Banner);
+    };
+
+    window.goCore.setBannerCbFromExternal = (cb) => {
+      this.base.setState(cb);
+    };
+
+    window.goCore.setCurrentHistoryIdx = (idx) => {
+      if (idx != this.state.LatestHistoryLen) {
+        this.setState({
+          CurrentHistoryIdx: idx,
+          LatestHistoryLen: idx
+        });
+      }
+    };
+
     this.back = () => {
       if (window.history.length == 0 ) {
         return;
