@@ -303,7 +303,7 @@ class Home extends BasePageComponent {
                             <div className="counter-number-wrap font-size-30">
                               <span className="counter-number">Open Sesame</span>
                             </div>
-                            <div className="counter-label text-capitalize">Find hidden gems and tools.  And some barf-tastic dev add-ons.</div>
+                            <div className="counter-label text-capitalize">Developer Tools (Click Here)</div>
                           </div>
                         </div>
                       </div>
