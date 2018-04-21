@@ -4,6 +4,12 @@ if [[ "$pth" == "" ]]; then
     exit 1
 fi
 
+envNode=$NODE_ENV
+if [[ "$envNode" == "" ]]; then
+    echo "Set NODE_ENV environment to development"
+    exit 1
+fi
+
 if [ ! -f "$GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/webConfig.json" ]; then
     mkdir -p $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/log/plugins
     cd $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/bin
