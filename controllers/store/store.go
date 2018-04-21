@@ -4,15 +4,11 @@ package store
 import (
 	"encoding/json"
 	"fmt"
-	"reflect"
-	"strings"
 
 	coreStore "github.com/DanielRenne/GoCore/core/store"
-	"github.com/DanielRenne/GoCore/core/utils"
 	"github.com/DanielRenne/goCoreAppTemplate/br"
 	"github.com/DanielRenne/goCoreAppTemplate/constants"
 	"github.com/DanielRenne/goCoreAppTemplate/controllers"
-	"github.com/DanielRenne/goCoreAppTemplate/sessionFunctions"
 	"github.com/DanielRenne/goCoreAppTemplate/viewModel"
 )
 
@@ -40,7 +36,6 @@ func (obj *storePostPayload) Parse(data string) {
 	json.Unmarshal([]byte(data), &obj)
 	json.Unmarshal(obj.ValueRaw, &obj.Value)
 }
-
 
 //Get returns an entity from a collection store.
 func (sc *StoreController) Get(context session_functions.RequestContext, state string, respond session_functions.ServerResponse) {
@@ -157,7 +152,7 @@ func (*StoreController) processGoCore(vm storePostPayload) (y interface{}) {
 
 	defer func() {
 		if r := recover(); r != nil {
-			session_functions.Log("Error", "Panic at store.go processGoCore:  "+fmt.Sprintf("%+v", r)+"  \nPath:  "+path+"\nValue:  "+fmt.Sprintf("%+v", x))
+			session_functions.Log("Error", "Panic at store.go processGoCore:  "+fmt.Sprintf("%+v", r)+"  \nPath:  "+vm.Path+"\nValue:  "+fmt.Sprintf("%+v", vm.Value))
 			return
 		}
 	}()

@@ -8,7 +8,9 @@ import (
 
 	"github.com/DanielRenne/GoCore/core/app"
 	"github.com/DanielRenne/GoCore/core/store"
+	"github.com/DanielRenne/goCoreAppTemplate/sessionFunctions"
 	"github.com/DanielRenne/GoCore/core/utils"
+
 )
 
 const (
