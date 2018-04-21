@@ -32,9 +32,11 @@ window.Load_settings = function() {
   props.otherTabSelected = state.SettingsBar.ButtonBar.Config.OtherTabSelected;
   props.tabIconsLarge = {};
   props.tabIcons = {};
+  props.tabUriParams = {};
   props.tabOrder.forEach((value) => {
       let icon = '';
       let iconsm = '';
+      let params = {};
       switch(value) {
           //SettingsIconSwitch
           case "RoleList":
@@ -67,6 +69,7 @@ window.Load_settings = function() {
       }
     props.tabIconsLarge[value] = icon;
     props.tabIcons[value] = iconsm;
+    props.tabUriParams[value] = params;
   });
 
   if (state.SettingsBar.ButtonBar.Config.CurrentTab == state.SettingsBar.Constants.AccountList) {

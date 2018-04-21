@@ -10,12 +10,6 @@ echo "" >  $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/log/npmErrors.lo
 echo "" >  $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/log/npm.log
 i=1
 while true; do
-   grep "build modules" $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/log/npm.log > /dev/null 2>&1
-   retx=$?
-   if [[ "$retx" -eq 0 ]] && [[ "$REACTCOMPILING" -eq 0 ]]; then
-     say "React compiling"  > /dev/null 2>&1
-     REACTCOMPILING=1
-   fi
    grep "bundle is now VALID" $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/log/npm.log > /dev/null 2>&1
    ret=$?
    grep "webpack: Compiled successfully" $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/log/npm.log > /dev/null 2>&1
@@ -44,21 +38,9 @@ while true; do
          say "Errors in React"  > /dev/null 2>&1
          cp $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/log/npm.log $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/log/npmErrors.log
          cat $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/log/npmErrors.log
-         #if [ "$(uname)" == "Darwin" ]; then
-           #open -a TextEdit $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/log/npm.log &
-         #elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
-           #gedit $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/log/npm.log &
-         #fi
-       else
-         if [[ "$REACTCOMPILING" -eq 1 ]]; then
+       else 
            cp $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/log/npm.log $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/log/npmSuccess.log
            say "React compiled"  > /dev/null 2>&1
-           if [[ "$GOWATCHRUNNING" -eq 0 ]]; then
-             GOWATCHRUNNING=1
-             bash $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/bin/start_go_watch_only
-             tail -f $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/log/app.log &
-           fi
-         fi
        fi
        echo "" >  $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/log/npm.log
        REACTCOMPILING=0

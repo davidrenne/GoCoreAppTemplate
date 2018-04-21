@@ -64,6 +64,7 @@ class CoreRouter {
     this.onPostSuccess = (callback) =>  {
       this.onPostSuccessCallback = callback;
     }
+  }
 
   getVar(name, url) {
     if (!url) {

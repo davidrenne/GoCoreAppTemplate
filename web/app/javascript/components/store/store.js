@@ -1,7 +1,7 @@
 class Store {
   constructor() {
     this.subscriptions = [];
-    this.appName = "Velocity";
+    this.appName = "GoCore";
     this.retryInterval = 3000;
   }
 
@@ -183,7 +183,7 @@ class Store {
     };
 
     call();
- 
+
     if (callback !== undefined) {
       let count = 0;
       timeout = setInterval(() => {

@@ -15,6 +15,9 @@ import (
 
 	"github.com/globalsign/mgo/bson"
 
+	"net/http"
+	"reflect"
+
 	"github.com/DanielRenne/GoCore/core"
 	"github.com/DanielRenne/GoCore/core/app"
 	"github.com/DanielRenne/GoCore/core/extensions"
@@ -27,13 +30,10 @@ import (
 	"github.com/DanielRenne/goCoreAppTemplate/models/v1/model"
 	"github.com/DanielRenne/goCoreAppTemplate/payloads"
 	"github.com/DanielRenne/goCoreAppTemplate/scheduleEngine"
-	"github.com/DanielRenne/goCoreAppTemplate/sessionFunctions"
 	"github.com/DanielRenne/goCoreAppTemplate/settings"
 	"github.com/DanielRenne/goCoreAppTemplate/viewModel"
 	"github.com/gin-gonic/gin"
 	"github.com/mattn/go-isatty"
-	"net/http"
-	"reflect"
 	"xojoc.pw/useragent"
 )
 
@@ -637,7 +637,6 @@ func callState(controller string, action string, state string, c *gin.Context, r
 
 }
 
-
 func handleDirector(c *gin.Context) {
 	data, modTime, _ := readProductionCachedFile(settings.WebRoot + "/lib/director.min.js")
 	ginServer.RespondJSFile(data, modTime, c)
@@ -820,8 +819,7 @@ func handleFileObject(c *gin.Context) {
 	var fileObj model.FileObject
 	filter := make(map[string]interface{}, 2)
 	filter[model.FIELD_FILEOBJECT_ID] = id
-	filter[model.FIELD_FILEOBJECT_ACCOUNTID] = acct.Id.Hex()
-	err = model.FileObjects.Query().Filter(filter).One(&fileObj)
+	err := model.FileObjects.Query().Filter(filter).One(&fileObj)
 	if err == nil {
 		data, err := base64.StdEncoding.DecodeString(fileObj.Content)
 		if err == nil {

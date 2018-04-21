@@ -72,7 +72,7 @@ class Launcher {
       let controllerActionSkips = ["roomList-TailLog", "serverSettingsModify-RestoreDatabase", "serverSettingsModify-FactoryReset", "equipmentCatalog-LearnIR"];
       startSpinner &= $.inArray(information.controller + "-" + information.action, controllerActionSkips) == -1;
     }
-    if (information.action != undefined && $.inArray(information.action, ["YouNeedToAddCertainbActionsToStopSpinner"]) {
+    if (information.action != undefined && $.inArray(information.action, ["YouNeedToAddCertainbActionsToStopSpinner"])) {
       startSpinner = false;
     }
     // if (window.hasOwnProperty("goCore") && window.goCore.setLoaderFromExternal != undefined && startSpinner) {
@@ -386,11 +386,7 @@ class Launcher {
         this.setPageState(State, callback);
       } else if (leaveStateAlone) {
         callback();
-      }
-    } else {
-      this.setPageState(State, callback);
-    }
-
+      } 
   }
 
   handlePostSuccess(data, status, xhr, State, Redirect, GlobalMessage, Trace, GlobalMessageType, TransactionId, LeaveStateAlone, postCallback, postErrorCallback) {

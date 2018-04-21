@@ -30,9 +30,9 @@ do
        set -e
 
        bash $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/bin/start_golang
-       exit(1)
+       exit 1
    fi
-   
+
    if [[ "$ret" -eq 0 ]] || [[ "$ret2" -eq 0 ]]; then
      echo -e "${GREEN}>>>>>>>>>>>>>>>>>>GOLANG IS FULLY MOUNTED<<<<<<<<<<<<<<<<<<${NC} "
      set +e

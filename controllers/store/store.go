@@ -46,7 +46,8 @@ func (sc *StoreController) Get(context session_functions.RequestContext, state s
 
 	x, err := coreStore.Get(vm.Collection, vm.ID, vm.Joins)
 	if err != nil {
-		respond(constants.PARAM_REDIRECT_NONE, "Failed to retrieve entity.", constants.PARAM_SNACKBAR_TYPE_ERROR, err, constants.PARAM_TRANSACTION_ID_NONE, viewModel.EmptyViewModel{})
+		message := "Failed to retrieve entity.  Get->Collection:  " + vm.Collection + "\r\n  Id:  " + vm.ID + "\r\n" + fmt.Sprintf("%+v", vm)
+		respond(constants.PARAM_REDIRECT_NONE, message, constants.PARAM_SNACKBAR_TYPE_ERROR, err, constants.PARAM_TRANSACTION_ID_NONE, viewModel.EmptyViewModel{})
 		return
 	}
 
@@ -66,7 +67,8 @@ func (sc *StoreController) GetByPath(context session_functions.RequestContext, s
 
 	x, err := coreStore.GetByPath(vm.Collection, vm.ID, vm.Joins, vm.Path)
 	if err != nil {
-		respond(constants.PARAM_REDIRECT_NONE, "Failed to retrieve entity.", constants.PARAM_SNACKBAR_TYPE_ERROR, err, constants.PARAM_TRANSACTION_ID_NONE, viewModel.EmptyViewModel{})
+		message := "Failed to retrieve entity.  GetByPath->Collection:  " + vm.Collection + "\r\n  Id:  " + vm.ID + "\r\n" + fmt.Sprintf("%+v", vm)
+		respond(constants.PARAM_REDIRECT_NONE, message, constants.PARAM_SNACKBAR_TYPE_ERROR, err, constants.PARAM_TRANSACTION_ID_NONE, viewModel.EmptyViewModel{})
 		return
 	}
 
@@ -80,7 +82,9 @@ func (*StoreController) GetByFilter(context session_functions.RequestContext, st
 
 	x, err := coreStore.GetByFilter(vm.Collection, vm.Filter, vm.InFilter, vm.ExcludeFilter, vm.Joins)
 	if err != nil {
-		respond(constants.PARAM_REDIRECT_NONE, "Failed to retrieve entity.", constants.PARAM_SNACKBAR_TYPE_ERROR, err, constants.PARAM_TRANSACTION_ID_NONE, viewModel.EmptyViewModel{})
+
+		message := "Failed to retrieve entity.  GetByFilter->Collection:  " + vm.Collection + "\r\n" + fmt.Sprintf("%+v", vm)
+		respond(constants.PARAM_REDIRECT_NONE, message, constants.PARAM_SNACKBAR_TYPE_ERROR, err, constants.PARAM_TRANSACTION_ID_NONE, viewModel.EmptyViewModel{})
 		return
 	}
 
@@ -154,26 +158,6 @@ func (*StoreController) processGoCore(id string, path string, x interface{}) (y 
 		}
 	}()
 
-	pathItems := strings.Split(path, ".")
-	brType := pathItems[0]
-	functionCall := pathItems[1]
-
-	brObj, ok := br.GetBr(brType)
-	if ok {
-		method := brObj.MethodByName(functionCall)
-		in := []reflect.Value{}
-		if x != nil {
-			in = append(in, reflect.ValueOf(x))
-		}
-		if method.IsValid() {
-			value := method.Call(in)
-			if len(value) > 0 {
-				y = value[0].Interface()
-			}
-		}
-	} else {
-		utils.TalkDirtyToMe("BR method not registered.  Check init exists.")
-	}
-
+	y = br.Store.Execute(vm.Path, vm.Value, vm.ValueRaw)
 	return
 }
