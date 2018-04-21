@@ -1,6 +1,7 @@
 
 whoami=$(whoami)
-if [[ "$whoami" == "root" ]]; then
+port=$(bash $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/bin/get_port_local)
+if [[ "$whoami" == "root" ]] || [[ "$port" != "80" ]]; then
     ps -ax | grep goWatch | awk '{print $1}' | xargs kill > /dev/null 2>&1
 else
     ps -ax | grep goWatch | awk '{print $1}' | xargs sudo kill > /dev/null 2>&1
@@ -11,4 +12,8 @@ cd $GOPATH/bin
 go build github.com/DanielRenne/goWatch
 cd $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/web/app/
 say "Go watch is running."
-sudo goWatch watchFile.json > /tmp/goWatch.log 2>&1 &
+if [[ "$whoami" == "root" ]] || [[ "$port" != "80" ]]; then
+    goWatch watchFile.json > /tmp/goWatch.log 2>&1 &
+else
+    sudo goWatch watchFile.json > /tmp/goWatch.log 2>&1 &
+fi

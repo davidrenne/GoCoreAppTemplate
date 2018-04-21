@@ -15,7 +15,7 @@ module.exports = new Config.default().merge({
   entry:  entries,
   plugins: [
     // Allows error warnings but does not stop compiling.
-    new webpack.NoErrorsPlugin(),
+    new webpack.NoEmitOnErrorsPlugin(),
     new OptimizeCssAssetsPlugin({
       assetNameRegExp: /\.css$/g,
       cssProcessor: require('cssnano'),
@@ -33,7 +33,7 @@ module.exports = new Config.default().merge({
       },
       {
         test: /\.scss$/,
-        loader: "style-loader!css-loader!sass-loader"         
+        loader: "style-loader!css-loader!sass-loader"
       },
       {
         test: /\.css$/, loader: ExtractTextPlugin.extract({ fallback: 'style-loader', use: 'css-loader' })

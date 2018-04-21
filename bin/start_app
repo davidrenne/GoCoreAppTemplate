@@ -9,9 +9,7 @@ fi
 bash $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/bin/kill_go_watch
 
 if [ ! -f "$GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/webConfig.json" ]; then
-    say "Copying web config and npm install for first time development process"
     mkdir -p $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/log/plugins
-    cp $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/webConfig.dev.json $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/webConfig.json
     cd $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/bin
     chmod +x *
 fi
@@ -38,7 +36,7 @@ echo "" > $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/log/db.log
 echo "" > /tmp/go_watch.log
 echo "" > $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/log/npm.log
 
-if [[ "$whoami" == "root" ]]; then
+if [[ "$whoami" == "root" ]] || [[ "$port" != "80" ]]; then
     rm $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/log/mongo.log
 else
     sudo rm $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/log/mongo.log
