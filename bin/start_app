@@ -1,12 +1,14 @@
 pth=$GOPATH
 if [[ "$pth" == "" ]]; then
     echo "You have no GOPATH environment variable.  Please install go and set it before running this app"
+    say "You have no GOPATH environment variable.  Please install go and set it before running this app.  Exiting now"
     exit 1
 fi
 
 envNode=$NODE_ENV
 if [[ "$envNode" == "" ]]; then
     echo "Set NODE_ENV environment to development"
+    say "Set NODE_ENV environment to development.  Exiting now"
     exit 1
 fi
 
@@ -33,9 +35,15 @@ if [ ! -d "$GOPATH/src/github.com/DanielRenne/GoCore" ]; then
     say "installing go core"
     go get github.com/DanielRenne/GoCore/...
     go install github.com/DanielRenne/GoCore/getCore
+    sleep 2
     getCore
     go install github.com/DanielRenne/GoCore/core/goCoreCreateApp
 fi
+
+if [ ! -d "$GOPATH/src/github.com/DanielRenne/GoCore/tools/appFiles/web" ]; then
+   getCore
+fi
+
 set +e
 
 if [ ! -d "$GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/web/app/node_modules" ]; then
