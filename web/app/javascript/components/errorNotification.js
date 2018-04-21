@@ -66,7 +66,7 @@ class ErrorNotification extends BaseComponent {
         </Drawer>
       );
     } catch(e) {
-      return <Drawer width={this.state.drawerWidth} open={this.state.open} openSecondary={true} containerStyle={{zIndex:2000, top:71, height:103}}>{this.globs.ComponentError(this.getClassName(), e.message)}</Drawer>
+      return <Drawer width={this.state.drawerWidth} open={this.state.open} openSecondary={true} containerStyle={{zIndex:2000, top:71, height:103}}>{this.globs.ComponentError("ErrorNotification", e.message, e)}</Drawer>
     }
   }
 }

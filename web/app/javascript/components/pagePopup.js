@@ -51,7 +51,7 @@ class PagePopup extends BaseComponent {
             open={this.state.open}
             onRequestClose={this.handleClose}
           >
-            {this.globs.ComponentError(this.getClassName(), e.message)}
+            {this.globs.ComponentError("PagePopup", e.message, e)}
           </Dialog>
     }
   }

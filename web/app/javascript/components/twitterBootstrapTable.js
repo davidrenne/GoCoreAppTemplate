@@ -36,7 +36,7 @@ class TwitterBootstrapTable extends BaseComponent {
           ret.push((<div key={"card" + k} className="row" style={this.props.rowStyle}>{cols}</div>));
         });
         return (
-          <div>
+          <div onClick={this.props.onClick}>
             {ret}
           </div>
         );
@@ -44,7 +44,7 @@ class TwitterBootstrapTable extends BaseComponent {
         return null;
       }
     } catch(e) {
-      return this.globs.ComponentError(this.getClassName(), e.message);
+      return this.globs.ComponentError("TwitterBootstrapTable", e.message, e);
     }
   }
 }

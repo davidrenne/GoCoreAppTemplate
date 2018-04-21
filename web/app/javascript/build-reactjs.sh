@@ -15,6 +15,13 @@ cp lib/brand-icons.woff2 dist/javascript/
 cd javascript
 gzip -f go-core-app.js
 mv -f go-core-app.js.* ../dist/javascript/
+set +e
+rm ../dist/javascript/atlona-studio.js.map > /dev/null 2>&1
+set -e
+cp ../node_modules/react-intl-tel-input/dist/flags.png ../dist/css/
+cp ../node_modules/react-intl-tel-input/dist/flags@2x.png  ../dist/css/
+cp ../node_modules/react-intl-tel-input/dist/libphonenumber.js  ../dist/javascript/
+gzip -f ../dist/javascript/libphonenumber.js
 
 cp polyfills/polyfills.js  ../dist/javascript/polyfills.js
 cp Core.js ../dist/javascript/core.js

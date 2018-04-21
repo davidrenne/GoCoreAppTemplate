@@ -1,8 +1,6 @@
 /**
  * Created by Dan on 11/3/16.
  */
-import Director from "director";
-
 
 class CoreRouter {
   constructor() {
@@ -22,7 +20,7 @@ class CoreRouter {
       '/*': () => this.handlePartialPageLoad(),
     };
 
-    var router = Director.Router(routes);
+    var router = window.Router(routes);
 
 
     $(document).ready(() => {
@@ -67,6 +65,20 @@ class CoreRouter {
       this.onPostSuccessCallback = callback;
     }
 
+  getVar(name, url) {
+    if (!url) {
+      url = window.location.href;
+    }
+    name = name.replace(/[\[\]]/g, "\\$&");
+    var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+        results = regex.exec(url);
+    if (!results) {
+      return null;
+    }
+    if (!results[2]) {
+      return '';
+    }
+    return decodeURIComponent(results[2].replace(/\+/g, " "));
   }
 
   handlePartialPageLoad() {
@@ -140,7 +152,11 @@ class CoreRouter {
 
         if (this.onGetSuccessCallback != undefined) {
           this.clientSide = true;
-          this.onGetSuccessCallback( data, status, xhr, data.Html, contentObj, jsonObj, data.Redirect, data.GlobalMessage, data.Trace, data.GlobalMessageType, this.getCallback, newPage);
+          let leaveStateAlone = false;
+          if (this.getVar("leaveStateAlone") == "1") {
+            leaveStateAlone = true;
+          }
+          this.onGetSuccessCallback( data, status, xhr, data.Html, contentObj, jsonObj, data.Redirect, data.GlobalMessage, data.Trace, data.GlobalMessageType, this.getCallback, newPage, leaveStateAlone);
           this.getCallback = undefined;
 
           //Tell the websocket what page I am on.
@@ -185,6 +201,12 @@ class CoreRouter {
     }
 
     this.clientSide = false;
+
+    var url = "/api?path=" + controller;
+    if (param.urlOverride !== undefined) {
+      url = param.urlOverride;
+    }
+
     var apiPayload = {};
     apiPayload.action = param.action;
     apiPayload.state = JSON.stringify(param.state);
@@ -197,7 +219,7 @@ class CoreRouter {
             xhrObj.setRequestHeader("Content-Type","application/json");
             xhrObj.setRequestHeader("Accept","application/json");
         },
-        url: "/api?path=" + controller,
+        url: url,
         type: 'POST',
         async: !param.hasOwnProperty("async") ? true: param.async,
         data: apiPayloadString,
@@ -259,7 +281,14 @@ class CoreRouter {
             FileUpload.Type = param.file.type;
             FileUpload.Modified = param.file.lastModifiedDate;
             FileUpload.ModifiedUnix = param.file.lastModified;
-            window.api.post({action: "Save", state: {FileObject: FileUpload, Width:param.width, Height:param.height}, controller: "fileUpload", leaveStateAlone: true, callback: (a, b, c, d, e, f, g, h, i, j) => {
+            window.api.post({action: "Save",
+                             state: {FileObject: FileUpload,
+                                     Width:param.width,
+                                     Height:param.height},
+                             controller: "fileUpload",
+                             leaveStateAlone: true,
+                             disableSpinner: param.disableSpinner,
+                             callback: (a, b, c, d, e, f, g, h, i, j) => {
               if (this.onEndRequestCallback != undefined) {
                 this.onEndRequestCallback();
               }
@@ -526,9 +555,12 @@ class CoreRouter {
     }
 
     //fullMount basically passes a unique token so that the entire react tree is rebuilt and you lose all of local this and replace with whatever the state of the server returns to the page/request
-
+    let leaveState = "0";
+    if (param.hasOwnProperty("leaveStateAlone") && param.leaveStateAlone) {
+      leaveState = "1";
+    }
     //(window.appState.DeveloperMode ? "&react_perf=1" : "") +
-    var customGet = window.location.origin + partialPath + controller + "?action=" + action + "&uriParams=" + encodeURIComponent(uriParams) + ((param.hasOwnProperty("fullMount") && param.fullMount) ? "&token=" + window.globals.guid() : "");
+    var customGet = window.location.origin + partialPath + controller + "?action=" + action + "&uriParams=" + encodeURIComponent(uriParams) + "&leaveStateAlone=" + leaveState + ((param.hasOwnProperty("fullMount") && param.fullMount) ? "&token=" + window.globals.guid() : "");
     this.getCallback = param.callback;
 
     console.log("URI Params:  ", param.uriParams);

@@ -218,8 +218,6 @@ func loadRoutes() {
 	}
 
 	ginServer.Router.GET("/dist/javascript/libphonenumber.js.gz", handleLibPhoneGzip)
-	ginServer.Router.GET("/dist/javascript/gopherjs.js.gz", handleGopherGzip)
-	ginServer.Router.GET("/dist/javascript/gopherjs.js.map", handleGopherMap)
 	ginServer.Router.GET("/dist/css/flags@2x.png", handleFlag2X)
 	ginServer.Router.GET("/dist/css/flags.png", handleFlag)
 
@@ -251,6 +249,7 @@ func loadRoutes() {
 	ginServer.Router.GET("/dist/javascript/config-tour.min.js.gz.js", handleGzipConfigTour)
 	ginServer.Router.GET("/dist/javascript/material-design.min.css.gz.js", handleGzipMaterialDesign)
 	ginServer.Router.GET("/dist/javascript/brand-icons.min.css.gz.js", handleGzipBrandIcons)
+	ginServer.Router.GET("/dist/javascript/director.min.js", handleDirector)
 	ginServer.Router.GET("/dist/javascript/html5shiv.min.js.gz.js", handleGzipHtml5shiv)
 	ginServer.Router.GET("/dist/javascript/media.match.min.js.gz.js", handleGzipMedia)
 	ginServer.Router.GET("/dist/javascript/respond.min.js.gz.js", handleGzipRespond)
@@ -638,6 +637,12 @@ func callState(controller string, action string, state string, c *gin.Context, r
 
 }
 
+
+func handleDirector(c *gin.Context) {
+	data, modTime, _ := readProductionCachedFile(settings.WebRoot + "/lib/director.min.js")
+	ginServer.RespondJSFile(data, modTime, c)
+}
+
 func handleGzipMin(c *gin.Context) {
 	data, modTime, _ := readProductionCachedFile(settings.WebRoot + "/lib/jquery.min.js.gz.js")
 	ginServer.RespondGzipJSFile(data, modTime, c)
@@ -807,12 +812,6 @@ func handleBrandIconsWoff2(c *gin.Context) {
 
 func handleFileObject(c *gin.Context) {
 	id := c.Param("Id")
-	acct, err := session_functions.GetSessionAccount(c)
-	if err != nil {
-		ginServer.ReadJpgFile(settings.WebRoot+"/images/no-image-found.jpg", c)
-		return
-	}
-
 	if !bson.IsObjectIdHex(id) {
 		ginServer.ReadJpgFile(settings.WebRoot+"/images/no-image-found.jpg", c)
 		return

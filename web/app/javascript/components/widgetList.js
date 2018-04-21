@@ -157,17 +157,22 @@ class WidgetList extends BaseComponent {
       Criteria: this.props.listViewModel.Criteria,
       CustomCriteria: this.props.listViewModel.CustomCriteria,
       IsDefaultFilter: this.props.listViewModel.IsDefaultFilter,
-      ListTitle: this.props.listTitle,
+      ListTitle: this.globs.translate(this.props.listViewModel.ListTitle),
       data: data,
       tableHeight: '300px',
       widthTable: $(window).width(),
       widthRight: 0,
+      addButtonOffset: 362 - 49,
       widthWindow: $(window).width(),
       heightTable: $(window).height(),
       heightWindow: $(window).height(),
-      fieldsWithButton: this.getFields($(window).width()),
       checkboxButtons: checkboxButtons
     };
+
+    $.each(this.getResizeChanges(false), (k, v) => {
+      this.state[k] = v;
+    });
+
     this.resizeEvent = (e) => this.handleResize(e);
 
   }
@@ -215,6 +220,16 @@ class WidgetList extends BaseComponent {
       newFields.push(row);
     });
 
+    if (newFields.length == 0) {
+      newFields.push(this.props.fields[0]);
+      if (width > 550 && width < 1024) {
+        try {
+          this.props.fields[1]
+          newFields.push(this.props.fields[1]);
+        } catch(e) { }
+      }
+    }
+
     if (this.rowButtons.length > 0) {
       newFields.push({
         tooltip: "",
@@ -230,33 +245,50 @@ class WidgetList extends BaseComponent {
   }
 
   handleResize(e) {
+    this.setComponentState(this.getResizeChanges(true), () => {
+      this.setComponentState({fieldsWithButton: this.getFields(this.state.widthWindow), addButtonOffset: this.getLeftForButtonOffset()});
+    });
+  }
+
+  getResizeChanges(initBlank=true) {
     var bodySelector = $(this.props.bodySelector);
     var updates = {};
+    if (!initBlank) {
+      updates = {
+        fieldsWithButton: this.getFields($(window).width()),
+      };
+    }
+    // dynamically fit
+    let heightOffsetCenter = 0;
+    let heightOffsetLeft = 0;
+    let heightOffset = 0;
     if ($(window).height() < 500) {
       updates.tableHeight = ((this.getRowHeight() * 5)) + 'px';
     } else {
-      // dynamically fit
-      var sparePixels = bodySelector.height() - ($(findDOMNode(this)).height() + this.props.offsetHeightToList);
+      if (initBlank) {
+        heightOffset = $(findDOMNode(this)).height();
+      }
+      var sparePixels = bodySelector.height() - (heightOffset + this.props.offsetHeightToList);
       var possibleTotalHeightToWorkWith = bodySelector.height() - this.props.offsetHeightToList - ((this.getRowHeight() * totalHeaderCount) + totalFooterHeight);
       var maxHeight = this.getRowHeight() * this.state.PerPage;
       if (possibleTotalHeightToWorkWith > maxHeight) {
         possibleTotalHeightToWorkWith = maxHeight;
       }
       updates.tableHeight = possibleTotalHeightToWorkWith + 'px';
-
     }
     updates.widthWindow = $(window).width();
     updates.widthTable = bodySelector.width() - (($(window).width() < 1025) ? 0: this.props.marginRight);
-    updates.widthRight = updates.widthTable - $(findDOMNode(this.headerCenterRef)).width() -  $(findDOMNode(this.headerLeftRef)).width()
+
+    if (initBlank) {
+      heightOffsetCenter = $(findDOMNode(this.headerCenterRef)).width();
+      heightOffsetLeft = $(findDOMNode(this.headerLeftRef)).width();
+    }
+    updates.widthRight = updates.widthTable -  heightOffsetCenter -  heightOffsetLeft;
     updates.heightWindow = $(window).height();
-    this.setComponentState(updates, () => {
-      this.setComponentState({fieldsWithButton: this.getFields(this.state.widthWindow), addButtonOffset: this.getLeftForButtonOffset()});
-    });
+    return updates;
   }
 
   componentDidMount() {
-    this.handleResize();
-    window.TimeoutCallbacks.push(window.setTimeout(() => this.handleResize(), 2500));
     window.addEventListener('resize', this.resizeEvent);
   }
 
@@ -271,30 +303,9 @@ class WidgetList extends BaseComponent {
   }
 
   componentWillUnmount() {
-    window.TimeoutCallbacks.forEach((cbs, key) => {
-      window.clearTimeout(cbs);
-      window.TimeoutCallbacks.splice(key, 1);
-    });
     window.removeEventListener('resize', this.resizeEvent);
   }
 
-  componentWillReceiveProps(nextProps) {
-    // Re-apply state if props are different
-    if ( nextProps.listViewModel.PerPage != this.state.PerPage || nextProps.listViewModel.SearchFields != this.state.SearchFields ||  nextProps.data != this.state.data || nextProps.listViewModel.Page != this.state.Page || nextProps.listViewModel.SortBy != this.state.SortBy || nextProps.listViewModel.SortDirection != this.state.SortDirection || nextProps.listViewModel.Criteria != this.state.Criteria || nextProps.listViewModel.ListTitle != this.state.ListTitle || nextProps.listViewModel.CustomCriteria != this.state.CustomCriteria || nextProps.listViewModel.IsDefaultFilter != nextProps.listViewModel.IsDefaultFilter) {
-      this.setComponentState({
-        data: nextProps.data,
-        SearchFields: nextProps.listViewModel.SearchFields,
-        PerPage: nextProps.listViewModel.PerPage,
-        Page: nextProps.listViewModel.Page,
-        SortBy: nextProps.listViewModel.SortBy,
-        SortDirection: nextProps.listViewModel.SortDirection,
-        Criteria: nextProps.listViewModel.Criteria,
-        ListTitle: this.globs.translate(nextProps.listViewModel.ListTitle) + this.getSearchTotalRows(nextProps.listViewModel.TotalResults),
-        CustomCriteria: nextProps.listViewModel.CustomCriteria,
-        IsDefaultFilter: nextProps.listViewModel.IsDefaultFilter,
-      });
-    }
-  }
 
   showCheckBoxes() {
     return (this.state.data && this.state.data.length > 0 && this.props.showCheckboxes);
@@ -305,6 +316,7 @@ class WidgetList extends BaseComponent {
   }
 
   buildSearchRequest(params={}) {
+    this.selectedRows = [];
     var newParams = {};
     window.SearchChanged = false;
     newParams.SearchFields = this.state.SearchFields;
@@ -330,13 +342,23 @@ class WidgetList extends BaseComponent {
     window.pageState.WidgetList.IsDefaultFilter = uriParams.IsDefaultFilter;
     window.pageState.WidgetList.ListTitle = uriParams.ListTitle;
     window.goCore.setLoaderFromExternal({loading: true});
-    this.setComponentState(window.pageState.WidgetList, ()=> {
       if (window.pageState.WidgetList.Criteria != "" && window.IsSearching) {
         window.ReRunSearch = true;
       }
       window.IsSearching = true;
-      window.api.get({action:"Search", uriParams: newParams, controller: this.controller, callback: (vm) => {
-        this.setComponentState({data: vm[this.props.dataKey], ListTitle: this.globs.translate(vm.WidgetList.ListTitle)}, () => {
+    window.api.get({action:"Search", leaveStateAlone: true, uriParams: newParams, controller: this.controller, callback: (vm) => {
+      this.setComponentState({
+        data: vm[this.props.dataKey],
+        ListTitle: this.globs.translate(vm.WidgetList.ListTitle),
+        SortBy: window.pageState.WidgetList.SortBy,
+        SearchFields: window.pageState.WidgetList.SearchFields,
+        SortDirection: window.pageState.WidgetList.SortDirection,
+        Page: window.pageState.WidgetList.Page,
+        PerPage: window.pageState.WidgetList.PerPage,
+        CustomCriteria: window.pageState.WidgetList.CustomCriteria,
+        Criteria: window.pageState.WidgetList.Criteria,
+        IsDefaultFilter: window.pageState.WidgetList.IsDefaultFilter,
+      }, () => {
           window.goCore.setLoaderFromExternal({loading: false});
           if (window.ReRunSearch) {
             window.ReRunSearch = false;
@@ -345,7 +367,6 @@ class WidgetList extends BaseComponent {
           window.IsSearching = false;
         });
       }});
-    });
   }
 
   getOpposite(direction) {
@@ -381,23 +402,17 @@ class WidgetList extends BaseComponent {
     }
   }
 
-  nextPage(set=true) {
+  nextPage() {
     var page = this.state.Page + 1;
-    if (set) {
-      this.setComponentState({Page: page});
-    }
     return page;
   }
 
 
-  previousPage(set=true) {
+  previousPage() {
     if (this.state.Page == 1) {
       var page = 1;
     } else {
       var page = this.state.Page - 1;
-    }
-    if (set) {
-      this.setComponentState({Page: page});
     }
     return page;
   }
@@ -522,6 +537,7 @@ class WidgetList extends BaseComponent {
         <TableFooter className="widgetListFooter" style={{lineHeight: "20px"}}>
           <TableRow style={{height: 50, maxHeight: 50}}>
             {(this.props.searchEnabled) ?
+            <span>
             <TableRowColumn colSpan={this.state.widthWindow > 1024 ? 1: 4} style={{height: 50, textAlign: 'left'}}>
               {/*Mobile pagination buttons need to be here*/}
               {(this.props.nextBackButtonsEnabled && this.state.widthWindow < 1024) ?
@@ -560,10 +576,10 @@ class WidgetList extends BaseComponent {
 
                 errorText={(this.state.data && this.state.data.length == 0) ? this.props.noDataMessage : null}
               />
-              </TableRowColumn>  : null}
-              {this.state.widthWindow > 1024 && this.props.searchEnabled ?
-               <TableRowColumn colSpan={1}>
-                <RaisedButton
+              </TableRowColumn>
+              {this.state.widthWindow > 1024 ?
+            <TableRowColumn colSpan={1}>
+              <RaisedButton
                     style={{minWidth: 40, marginTop:10, float: "left"}}
                     icon={<ActionSearch/>}
                     primary={true}
@@ -574,7 +590,7 @@ class WidgetList extends BaseComponent {
                       this.buildSearchRequest({Criteria: this.state.SearchVal, Page: 1})
                     }}
                   /></TableRowColumn>: null}
-
+            </span> : null}
               {(this.props.perPageSelectBoxEnabled && this.state.widthWindow > 1024) ?
             <TableRowColumn colSpan={1} style={{textAlign: 'right', textOverflow: "none"}}>
                   <span className="widgetListPerPage">

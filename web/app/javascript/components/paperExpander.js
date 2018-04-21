@@ -18,11 +18,16 @@ class PaperExpander extends BaseComponent {
     this.handleToggle = () => {
       this.setComponentState({expanded:(this.state.expanded) ? false : true});
     }
+
+    this.openPaper = () => {
+      this.setComponentState({expanded:true});
+    }
   }
 
   componentWillReceiveProps(nextProps) {
       this.setComponentState({style:nextProps.style, expanded: nextProps.expanded});
   }
+
 
   render() {
     try {
@@ -30,19 +35,16 @@ class PaperExpander extends BaseComponent {
       var paperHeight = 10000;
       var expandedIcon = (<DownArrow  color={blueGrey500}/>);
       if (!this.state.expanded) {
-        paperHeight = 40;
+        paperHeight = 50;
         expandedIcon = (<UpArrow  color={blueGrey500}/>);
       }
-
       var styleComposition = this.state.style;
       styleComposition.maxHeight = paperHeight;
-
       return (
-          <Paper style={styleComposition}  zDepth={5} >
-
+          <Paper style={styleComposition}  zDepth={2} >
             <span className="AlignerRight">
-              <Subheader style={{color:"black"}}  >{this.props.title}</Subheader>
-              <span className="AlignerLeft">
+              <Subheader style={{color:"black"}} className="paperExpanderSubHeader" >{this.props.title}</Subheader>
+              <span className="AlignerLeft" style={{whiteSpace:"nowrap"}}>
                 {this.props.button}
                 <IconButton style={{padding:0, height:40,marginTop:5}}  onClick={(e) => this.handleToggle()}>{expandedIcon}</IconButton>
               </span>
@@ -53,7 +55,7 @@ class PaperExpander extends BaseComponent {
           </Paper>
       );
     } catch(e) {
-      return this.globs.ComponentError(this.getClassName(), e.message);
+      return this.globs.ComponentError("PaperExpander", e.message, e);
     }
   }
 }

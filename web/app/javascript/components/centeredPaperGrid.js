@@ -22,7 +22,7 @@ class CenteredPaperGrid extends BaseComponent {
           </Grid>
        );
     } catch(e) {
-      return this.globs.ComponentError(this.getClassName(), e.message);
+      return this.globs.ComponentError("CenteredPaperGrid", e.message, e);
     }
   }
 }

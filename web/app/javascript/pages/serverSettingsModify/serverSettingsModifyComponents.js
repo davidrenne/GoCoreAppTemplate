@@ -25,7 +25,7 @@ import {
   DeleteIcon,
   List
 } from "../../globals/icons";
-import TextFieldStore from "../../components/store/textField";
+import TextFieldStoreComponent from "../../components/store/textField";
 import DatePicker from "material-ui/DatePicker";
 import TimePicker from "material-ui/TimePicker";
 import {DatabaseIcon} from "../../icons/icons";
@@ -168,7 +168,7 @@ class ServerSettingsModify extends BasePageComponent {
     var settingsTab = (
       <div>
       <CenteredPaperGrid>
-        <TextFieldStore
+        <TextFieldStoreComponent
             changeOnBlur={true}
             collection={"ServerSettings"}
             id={"597e315460e657d9b70563aa"}

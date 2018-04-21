@@ -1,3 +1,5 @@
+import util from 'util';
+
 class BaseLogger {
   constructor() {
 
@@ -90,7 +92,7 @@ class BaseLogger {
             if (params.getClassName != undefined) {
               className = params.getClassName();
             }
-  
+
             if (performance) {
               console.info(performance.now());
             }
@@ -187,12 +189,18 @@ class BaseLogger {
             if (performance) {
               console.info(performance.now());
             }
-            console.info('render invoked', params.obj);
+            if (window.appState.DeveloperLogState) {
+              console.info("State Compare:", util.inspect(params.obj.state));
+              console.info("Props Compare:", util.inspect(params.obj.props));
+            }
+            console.info('render invoked full object', params.obj);
           }
         }
       }
     }
   }
 }
+
+
 
 export default BaseLogger;

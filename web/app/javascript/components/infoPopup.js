@@ -6,7 +6,16 @@ class InfoPopup extends BaseComponent {
     super(props, context);
 
     this.state = {
-      open: false
+      open: false,
+      message:""
+    }
+
+    this.open = () => {
+      this.setComponentState({open: true});
+    }
+
+    this.setMessage = (message, open) => {
+      this.setComponentState({message:message, open:open});
     }
 
     this.handleClose = () => {
@@ -53,7 +62,7 @@ class InfoPopup extends BaseComponent {
             open={this.state.open}
             onRequestClose={this.handleClose}
           >
-            {this.props.children}
+            {(this.state.message != "") ? this.state.message : this.props.children}
           </Dialog>
         </div>
       );
@@ -63,7 +72,7 @@ class InfoPopup extends BaseComponent {
             open={this.state.open}
             onRequestClose={this.handleClose}
           >
-            {this.globs.ComponentError(this.getClassName(), e.message)}
+            {this.globs.ComponentError("InfoPopup", e.message, e)}
           </Dialog>
     }
   }

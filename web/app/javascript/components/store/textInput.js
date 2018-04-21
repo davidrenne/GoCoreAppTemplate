@@ -1,47 +1,45 @@
-
+/**
+ * Created by Dan on 12/5/16.
+ */
 import {React,
     BaseComponent,
     TextField,
   } from "../../globals/forms";
   import Loader from "./loader";
-  
-  class TextInputStore extends BaseComponent {
+
+  class TextInputStoreComponent extends BaseComponent {
     constructor(props, context) {
       super(props, context);
-  
+      this.unmounted = false;
+
       this.state = {
-        loaded: (this.props.value) ? true : false,
-        value:this.props.value,
+        value: undefined,
         errorText:""
       }
 
       this.changing = false;
       this.changingTimeout;
     }
-  
+
     componentDidMount() {
-      this.subscriptionId = this.store.subscribe(this.props.collection, this.props.id, this.props.path,(data) => {this.handleValueChange(data)}, this.props.value ? false : true)
+      this.subscriptionId = this.store.subscribe(this.props.collection, this.props.id, this.props.path,(data) => {this.handleValueChange(data)}, true)
       if (this.props.validateErrorMessage) {
         this.subscriptionErrorId = this.store.subscribe(this.props.collection, this.props.id, "Errors." + this.props.path, (data) => {this.handleErrorValueChange(data)}, false);
       }
-      
-      if (!this.props.value) {
-        this.store.getByPath({"collection":this.props.collection, 
-                              "id":this.props.id, 
-                              "path":this.props.path}, (data) => {
-          this.setState({loaded:true, value:data});
-        });
-      }
     }
-  
+
     componentWillUnmount() {
+      this.unmounted = true;
       this.store.unsubscribe(this.subscriptionId);
       if (this.props.validateErrorMessage) {
         this.store.unsubscribe(this.subscriptionErrorId);
       }
     }
-  
+
     handleValueChange(data) {
+      if (this.unmounted) {
+        return;
+      }
       if (this.changing) {
         return;
       }
@@ -56,44 +54,44 @@ import {React,
     handleErrorValueChange(data) {
       this.setState({errorText:data});
     }
-  
+
     render() {
       try {
-
-        if (!this.state.loaded) {
-          return (<Loader/>);
-        }
-
         return (
-          <TextField
-            onChange={(event) => {
-              clearTimeout(this.changingTimeout);
-              this.changing = true;
+          <span>
+            {this.state.value == undefined ? <Loader/>: null}
 
-              let t = typeof(this.props.value);
-              let value = event.target.value;
-              if (t == "number") {
-                value = Number(event.target.value)
-                if (isNaN(value)) {
-                  this.changing = false;
-                  return
-                }
-              }
+            <span style={{display: this.state.value == undefined ? "none" : "block"}}>
+              <TextField
+                onChange={(event) => {
+                  clearTimeout(this.changingTimeout);
+                  this.changing = true;
 
-              this.store.set(this.props.collection, this.props.id, this.props.path, value);
-              this.setState({value:value});
-              this.changingTimeout = setTimeout(() => {
-                this.changing = false;
-              }, 1500);
-            }}
-            defaultValue={this.state.value}
-            {...this.props.property}
-          />
+                  let value = event.target.value;
+                  if (this.props.isNumber === true) {
+                    value = Number(event.target.value)
+                    if (isNaN(value)) {
+                      this.changing = false;
+                      return
+                    }
+                  }
+
+                  this.store.set(this.props.collection, this.props.id, this.props.path, value);
+                  this.setState({value:value});
+                  this.changingTimeout = setTimeout(() => {
+                    this.changing = false;
+                  }, 1500);
+                }}
+                value={this.state.value}
+                {...this.props.property}
+              />
+            </span>
+          </span>
         );
 
         {/* <input
-              type="text" 
-              className="form-control" 
+              type="text"
+              className="form-control"
               value = {this.state.value.toString()}
               onChange={(event) => {
                 clearTimeout(this.changingTimeout);
@@ -122,17 +120,13 @@ import {React,
       }
     }
   }
-  
-  
-  TextInputStore.propTypes = {
+
+
+  TextInputStoreComponent.propTypes = {
     collection:React.PropTypes.string,
     id:React.PropTypes.string,
-    path:React.PropTypes.string,
-    value:React.PropTypes.oneOfType([
-      React.PropTypes.string,
-      React.PropTypes.number
-    ])
+    isNumber:React.PropTypes.bool,
+    path:React.PropTypes.string
   };
-  
-  export default TextInputStore;
-  
+
+  export default TextInputStoreComponent;

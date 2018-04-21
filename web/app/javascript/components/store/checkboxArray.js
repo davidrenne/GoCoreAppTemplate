@@ -1,56 +1,58 @@
-
+/**
+ * Created by Dan on 12/5/16.
+ */
 import {React,
     BaseComponent,
     Checkbox
   } from "../../globals/forms";
   import Loader from "./loader";
 import checkbox from "./checkbox";
-  
-  class CheckboxArrayStore extends BaseComponent {
+
+  class CheckboxArrayStoreComponent extends BaseComponent {
     constructor(props, context) {
       super(props, context);
-  
+
       this.state = {
-        loaded: (this.props.items) ? true : false,
-        items:this.props.items
+        value: undefined
       }
+      this.unmounted = false;
     }
 
     isChecked(key) {
-      for(var i = 0; i < this.state.items.length; i++) {
-        let item = this.state.items[i];
-        if (item == key) {
-          return true;
+      if (this.state.value != undefined) {
+        for(var i = 0; i < this.state.value.length; i++) {
+          let item = this.state.value[i];
+          if (item == key) {
+            return true;
+          }
         }
       }
       return false;
     }
-  
+
     componentDidMount() {
-      this.subscriptionId = this.store.subscribe(this.props.collection, this.props.id, this.props.path,(data) => {this.handleValueChange(data)}, this.props.items ? false : true);
-      if (!this.props.items) {
-        this.store.getByPath({"collection":this.props.collection, 
-                              "id":this.props.id, 
-                              "path":this.props.path}, (data) => {
-          this.setState({loaded:true, items:data});
-        });
-      }
+      this.subscriptionId = this.store.subscribe(this.props.collection, this.props.id, this.props.path,(data) => {this.handleValueChange(data)}, true);
     }
-  
+
     componentWillUnmount() {
+      this.unmounted = true;
       this.store.unsubscribe(this.subscriptionId);
     }
-  
+
     handleValueChange(data) {
-      this.setState({items:data});
+      if (this.unmounted) {
+        return;
+      }
+      if (data == null) {
+        return;
+      }
+      if (data != this.state.value) {
+        this.setState({value:data});
+      }
     }
-  
+
     render() {
       try {
-
-        if (!this.state.loaded) {
-          return (<Loader/>);
-        }
 
         let checkboxes = [];
 
@@ -65,25 +67,25 @@ import checkbox from "./checkbox";
                   label = {keyValue.value}
                   onCheck={(event, value) => {
 
-                    if (this.state.items == null) {
-                      this.state.items = [];
+                    if (this.state.value == undefined || this.state.value == null) {
+                      this.state.value = [];
                     }
-                
-                    for(var i = 0; i < this.state.items.length; i++) {
-                      if (keyValue.key == this.state.items[i] && value == true) {
+
+                    for(var i = 0; i < this.state.value.length; i++) {
+                      if (keyValue.key == this.state.value[i] && value == true) {
                         return;
                       }
-                      if (keyValue.key == this.state.items[i] && value == false) {
-                        this.state.items.splice(i, 1);
+                      if (keyValue.key == this.state.value[i] && value == false) {
+                        this.state.value.splice(i, 1);
                         break;
                       }
                     }
-                
+
                     if (value == true) {
-                      this.state.items.push(keyValue.key);
+                      this.state.value.push(keyValue.key);
                     }
 
-                    this.store.set(this.props.collection, this.props.id, this.props.path, this.state.items);
+                    this.store.set(this.props.collection, this.props.id, this.props.path, this.state.value);
                   }}
                 />
                 <div style={{height: 10}}/>
@@ -93,11 +95,16 @@ import checkbox from "./checkbox";
         } else {
           return null;
         }
-        
+
 
         return (
           <div>
-            {checkboxes}
+            <span>
+              {this.state.value == undefined? <Loader/>: null}
+              <span style={{display: this.state.value == undefined ? "none" : "block"}}>
+                {checkboxes}
+              </span>
+            </span>
           </div>
         );
       } catch(e) {
@@ -105,14 +112,12 @@ import checkbox from "./checkbox";
       }
     }
   }
-  
-  CheckboxArrayStore.propTypes = {
+
+  CheckboxArrayStoreComponent.propTypes = {
     collection:React.PropTypes.string,
     id:React.PropTypes.string,
     path:React.PropTypes.string,
-    items:React.PropTypes.array,
     keyValues:React.PropTypes.array
   };
-  
-  export default CheckboxArrayStore;
-  
+
+  export default CheckboxArrayStoreComponent;

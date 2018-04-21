@@ -45,7 +45,7 @@ class ButtonBarPage extends BaseComponent {
           </GoCoreParentNode>
       );
     } catch(e) {
-      return this.globs.ComponentError(this.getClassName(), e.message);
+      return this.globs.ComponentError("ButtonBarPage", e.message, e);
     }
   }
 }

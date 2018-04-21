@@ -1,7 +1,8 @@
 class Store {
   constructor() {
     this.subscriptions = [];
-    this.appName = "GoCore";
+    this.appName = "Velocity";
+    this.retryInterval = 3000;
   }
 
   init() {
@@ -139,7 +140,10 @@ class Store {
       if (entry.collection === data.Collection) {
         //if the data.Path is not set that means that the collection was updated.
         if ((entry.id === "" && entry.path === "") && (data.Path === undefined || data.Path === "")) {
-          let update = {changeType: "Add", value: data.Value};
+          let update = {
+            changeType: "Add",
+            value: data.Value
+          };
           if (data.Value === null) {
             update.changeType = "Delete";
             update.value = data.Id;
@@ -148,25 +152,60 @@ class Store {
           continue;
         }
 
-        if (entry.id === data.Id && entry.path === data.Path) {
-          entry.callback(data.Value);
+        if (entry.id === data.Id && entry.path === data.Path || (entry.id === data.Id && entry.path === "*")) {
+          if (entry.path === "*") {
+            entry.callback({changeType: "Modify", path: data.Path, value: data.Value});
+          } else {
+            entry.callback(data.Value);
+          }
           continue;
         }
       }
     }
   }
 
-  get(payload, callback) {
-    window.api.writeSocket({controller:"StoreController",
-                            action:"Get",
-                            state:{ Collection:payload.collection,
-                                    Id:payload.id,
-                                    Joins:(payload.joins) ? payload.joins :[]},
-                            leaveStateAlone:true,
-                            callback:callback});
+  get(payload, callback, retryInterval = this.retryInterval, retryMax = 10) {
+
+    var timeout;
+    let cb = (data) => {
+      callback(data);
+      clearInterval(timeout);
+    };
+
+    let call = () => {
+      window.api.writeSocket({controller:"StoreController",
+                              action:"Get",
+                              state:{ Collection:payload.collection,
+                                      Id:payload.id,
+                                      Joins:(payload.joins) ? payload.joins :[]},
+                              leaveStateAlone:true,
+                              callback:cb});
+    };
+
+    call();
+ 
+    if (callback !== undefined) {
+      let count = 0;
+      timeout = setInterval(() => {
+        count++;
+        if (count > retryMax) {
+          clearInterval(timeout);
+          return;
+        }
+        call();
+      }, retryInterval);
+    }
   }
 
-  getByFilter(payload, callback) {
+  getByFilter(payload, callback, retryInterval = this.retryInterval, retryMax = 10) {
+
+    var timeout;
+    let cb = (data) => {
+      callback(data);
+      clearInterval(timeout);
+    };
+
+    let call = () => {
     window.api.writeSocket({controller:"StoreController",
                             action:"GetByFilter",
                             state:{ Collection:payload.collection,
@@ -175,10 +214,34 @@ class Store {
                                     InFilter:(payload.inFilter !== undefined) ? payload.inFilter : {},
                                     ExcludeFilter:(payload.excludeFilter !== undefined) ? payload.excludeFilter : {}},
                             leaveStateAlone:true,
-                            callback:callback});
+                            callback:cb});
+    };
+
+    call();
+
+    if (callback !== undefined) {
+      let count = 0;
+      timeout = setInterval(() => {
+        count++;
+        if (count > retryMax) {
+          clearInterval(timeout);
+          return;
+        }
+        call();
+      }, retryInterval);
+    }
   }
 
-  getByPath(payload, callback) {
+  getByPath(payload, callback, retryInterval = this.retryInterval, retryMax = 10) {
+
+    var timeout;
+    let cb = (data) => {
+      callback(data);
+      clearInterval(timeout);
+    };
+
+    let call = () => {
+
     window.api.writeSocket({controller:"StoreController",
                             action:"GetByPath",
                             state:{ Collection:payload.collection,
@@ -186,17 +249,55 @@ class Store {
                                     Joins:(payload.joins) ? payload.joins :[],
                                     Path:payload.path},
                             leaveStateAlone:true,
-                            callback:callback});
+                            callback:cb});
+    };
+
+    call();
+
+    if (callback !== undefined) {
+      let count = 0;
+      timeout = setInterval(() => {
+        count++;
+        if (count > retryMax) {
+          clearInterval(timeout);
+          return;
+        }
+        call();
+      }, retryInterval);
+    }
   }
 
-  getByAction(action, payload, callback) {
+  getByAction(action, payload, callback, retryInterval = this.retryInterval, retryMax = 10) {
+    var timeout;
+    let cb = (data) => {
+      callback(data);
+      clearInterval(timeout);
+    };
+
+    let call = () => {
+
     window.api.writeSocket({controller:"StoreController",
                             action:action,
                             state:{Collection:payload.collection,
                                    Id:payload.id,
                                    Joins:(payload.joins) ? payload.joins :[]},
                             leaveStateAlone:true,
-                            callback:callback});
+                            callback:cb});
+    };
+
+    call();
+
+    if (callback !== undefined) {
+      let count = 0;
+      timeout = setInterval(() => {
+        count++;
+        if (count > retryMax) {
+          clearInterval(timeout);
+          return;
+        }
+        call();
+      }, retryInterval);
+    }
   }
 
   set(collection, id, path, value, callback) {

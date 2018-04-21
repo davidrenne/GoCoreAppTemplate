@@ -33,14 +33,14 @@ module.exports = new Config.default().merge({
       },
       {
         test: /\.scss$/,
-        loaders: [ 'style', 'css', 'sass' ]
+        loader: "style-loader!css-loader!sass-loader"         
       },
       {
-        test: /\.css$/, loader: ExtractTextPlugin.extract("style-loader", "css-loader")
+        test: /\.css$/, loader: ExtractTextPlugin.extract({ fallback: 'style-loader', use: 'css-loader' })
       },
       {
           test: /\.(gif|png)$/i,
-          loader: 'file?name=[name].[ext]',
+          loader: 'file-loader?name=[name].[ext]',
       },
       {
           test: /\.woff(\?v=\d+\.\d+\.\d+)?$/,
@@ -52,15 +52,15 @@ module.exports = new Config.default().merge({
       },
       {
           test: /\.eot(\?v=\d+\.\d+\.\d+)?$/,
-          loader: 'file?name=[name].[ext]',
+          loader: 'file-loader?name=[name].[ext]',
       },
       {
           test: /\.ttf(\?v=\d+\.\d+\.\d+)?$/,
-          loader: 'file?name=[name].[ext]',
+          loader: 'file-loader?name=[name].[ext]',
       },
       {
           test: /\.svg(\?v=\d+\.\d+\.\d+)?$/,
-          loader: 'file?name=[name].[ext]',
+          loader: 'file-loader?name=[name].[ext]',
       }
     ]
   }

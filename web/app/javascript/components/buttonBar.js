@@ -52,12 +52,16 @@ class ButtonBar extends BaseComponent {
         var tabIsVisible = this.props.tabIsVisible[i];
         otherTabSelected[name] = this.props.otherTabSelected[i];
         var icon = this.props.tabIcons[name];
+        var params = {};
+        if (this.props.tabUriParams[name] != undefined) {
+          params = this.props.tabUriParams[name];
+        }
         if (tabIsVisible) {
           nameToIndex[name] = b;
           let button = <Tab key={obj} className={obj} label={this.renderLabel(name)} icon={icon} onActive={
             (event) => {
               this.select(obj);
-              var parms = {action: action, uriParams: {}};
+              var parms = {action: action, uriParams: params};
               if (controller) {
                 parms.controller = controller;
               }
@@ -83,7 +87,7 @@ class ButtonBar extends BaseComponent {
       }
       return tpl;
     } catch (e) {
-      return this.globs.ComponentError(this.getClassName(), e.message);
+      return this.globs.ComponentError("ButtonBar", e.message, e);
     }
   }
 }

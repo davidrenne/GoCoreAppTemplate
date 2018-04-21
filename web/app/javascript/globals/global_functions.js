@@ -355,13 +355,28 @@ globals.GetHeaderElement = function() {
 };
 
 
+globals.NonConformingPages = function() {
+  return $.merge(globals.FullScreenPages(), globals.MostlyFullScreenPages());
+}
+
+globals.FullScreenPages = function() {
+  return ["AddYourFullScreenPagesHere"]
+}
+
 globals.FullScreenContent = function() {
   window.InFullScreen = true;
   window.paddingTopOnly = 0;
   window.paddingLeftOnly = 0;
   window.paddingRightOnly = 0;
   window.paddingBottomOnly = 0;
+  $('body').css({paddingTop: '0px'});
+  $('.Footer').css({padding: 0});
+  $('.GoCore-content').css({height:window.innerHeight,overflow: 'hidden'});
 };
+
+globals.MostlyFullScreenPages = function() {
+  return ["AddYourMostlyScreenPagesHere"]
+}
 
 globals.MostlyFullScreenContent = function() {
   window.InFullScreen = false;
@@ -369,6 +384,7 @@ globals.MostlyFullScreenContent = function() {
   window.paddingLeftOnly = 15;
   window.paddingRightOnly = 0;
   window.paddingBottomOnly = 0;
+  $('.site-navbar').show();
 };
 
 globals.NormalScreenContent = function() {
@@ -377,6 +393,16 @@ globals.NormalScreenContent = function() {
   window.paddingLeftOnly = 0;
   window.paddingRightOnly = 0;
   window.paddingBottomOnly = 0;
+  $('.site-navbar').show();
+  $('.Footer').css({padding: '.5rem'});
+  if ($(window).width() < 768) {
+    $('body').css({paddingTop: 66});
+  } else {
+    $('body').css({paddingTop: 70});
+  }
+  $('.site-menubar').css({top:66});
+  $('.GoCore-content').css({background: "none"});
+  $('.GoCore-content').css({overflow: 'auto'});
 };
 
 globals.GetVar = function(name, url)
@@ -1060,6 +1086,23 @@ globals.controlButtonInputSelectBox = function(value, errorTxt, onChange, width)
       </SelectField>
   </div>;
 };
+
+
+globals.standardDrawer = function() {
+  let drawerWidth = 0;
+  if (window.innerWidth > 1024) {
+      drawerWidth =  1024;
+  } else if (window.innerWidth > 700 && window.innerWidth <= 1024) {
+      drawerWidth =  700;
+  } else if (window.innerWidth > 400 && window.innerWidth <= 700) {
+      drawerWidth =  400;
+  } else if (window.innerWidth > 200 && window.innerWidth <= 400) {
+      drawerWidth =  200;
+  } else if (window.innerWidth > 50 && window.innerWidth <= 200) {
+      drawerWidth =  100;
+  }
+  return drawerWidth;
+}
 
 globals.colorPickerSelect = function(value, errorTxt, onChange, width, label, bkgFontColor, allowTransparent=true, required=true) {
   let defaultOption = null;

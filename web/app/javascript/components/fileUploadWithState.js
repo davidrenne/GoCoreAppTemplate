@@ -103,7 +103,7 @@ class FileUploadWithState extends BaseComponent {
         </div>
       );
     } catch(e) {
-      return this.globs.ComponentError(this.getClassName(), e.message);
+      return this.globs.ComponentError("FileUploadWithState", e.message. e);
     }
 	}
 }

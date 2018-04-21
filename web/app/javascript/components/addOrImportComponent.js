@@ -105,24 +105,6 @@ export default function AddOrImportPage(Component, Action, Tooltip, DownloadTemp
                     }
                   } else {
                     this.completionPopup.handleOpen();
-
-                    let perPage = 10;
-                    if (vm.FileUpload.Meta.RowsCommitted >= 10 && vm.FileUpload.Meta.RowsCommitted < 25) {
-                      perPage = 25;
-                    } else if (vm.FileUpload.Meta.RowsCommitted >= 25 && vm.FileUpload.Meta.RowsCommitted < 50) {
-                      perPage = 50;
-                    } else if (vm.FileUpload.Meta.RowsCommitted >= 50 && vm.FileUpload.Meta.RowsCommitted < 100) {
-                      perPage = 100;
-                    }
-                    let params = {action: "Search", controller: this.state.addPageController, callback: (vm) => {
-                      window.goCore.setStateFromExternal({data: vm[vm.WidgetList.DataKey]});
-                    }};
-                    params.uriParams = { Page: 1, PerPage: perPage, SortBy: "UpdateDate", SortDirection: "-"};
-                    params.uriParams = this.state.jsonCallbackUriParams(params.uriParams);
-                    if (this.state.uploadPageController != "siteImport") {
-                      params.uriParams.CustomCriteria = "last_hour";
-                    }
-                    window.api.get(params);
                   }
                 });
               }});

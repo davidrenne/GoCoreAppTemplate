@@ -23,7 +23,11 @@ class Loader extends BaseComponent {
         // set back to default
         state.text = window.appContent.LoadingPage;
       }
-      this.setComponentState(state, cb);
+      this.setComponentState(state, () => {
+        if (typeof(cb) == "function") {
+          cb();
+        }
+      });
     };
     this.resizeEvent = (e) => this.handleResize(e);
   }

@@ -70,7 +70,7 @@ class ConfirmDelete extends BaseComponent {
               open={this.state.open}
               onRequestClose={this.handleClose}
             >
-            {this.globs.ComponentError(this.getClassName(), e.message)}
+            {this.globs.ComponentError("ConfirmDelete", e.message, e)}
           </Dialog>
     }
   }

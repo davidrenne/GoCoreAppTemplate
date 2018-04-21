@@ -57,7 +57,7 @@ class Launcher {
     router.onStartRequest((typeRequest, information) => this.onStartRequest(typeRequest, information));
     router.onEndRequest(() => this.onEndRequest());
     router.onGetError((clientSide, message, e) => this.handleGetError(clientSide, message, e));
-    router.onGetSuccess((data, status, xhr, Html, PageContent, State, Redirect, GlobalMessage, Trace, GlobalMessageType, getCallback, newPage) => this.handleGetSuccess(data, status, xhr, Html, PageContent, State, Redirect, GlobalMessage, Trace, GlobalMessageType, getCallback, newPage));
+    router.onGetSuccess((data, status, xhr, Html, PageContent, State, Redirect, GlobalMessage, Trace, GlobalMessageType, getCallback, newPage, LeaveStateAlone) => this.handleGetSuccess(data, status, xhr, Html, PageContent, State, Redirect, GlobalMessage, Trace, GlobalMessageType, getCallback, newPage, LeaveStateAlone));
     router.onPostError((clientSide, message, e, controller, action, errorCallback) => this.handlePostError(clientSide, message, e, controller, action, errorCallback));
     router.onPostSuccess((data, status, xhr, State, Redirect, GlobalMessage, Trace, GlobalMessageType, TransactionId, LeaveStateAlone, postCallback, errorCallback) => this.handlePostSuccess(data, status, xhr, State, Redirect, GlobalMessage, Trace, GlobalMessageType, TransactionId, LeaveStateAlone, postCallback, errorCallback));
   }
@@ -67,10 +67,13 @@ class Launcher {
       localStorage.setItem("uriRedirect", "~"+window.location.hash.substring(2));
     }
     let startSpinner = true;
-    startSpinner &= window.location.href.indexOf("roomControl") == -1 && window.location.href.indexOf("roomModifyDevices") == -1;
+    startSpinner &= window.location.href.indexOf("YouNeedToAddCertainPagesToStopSpinner") == -1 && window.location.href.indexOf("YouNeedToAddCertainPagesToStopSpinner2") == -1;
     if (typeRequest == "post") {
       let controllerActionSkips = ["roomList-TailLog", "serverSettingsModify-RestoreDatabase", "serverSettingsModify-FactoryReset", "equipmentCatalog-LearnIR"];
       startSpinner &= $.inArray(information.controller + "-" + information.action, controllerActionSkips) == -1;
+    }
+    if (information.action != undefined && $.inArray(information.action, ["YouNeedToAddCertainbActionsToStopSpinner"]) {
+      startSpinner = false;
     }
     // if (window.hasOwnProperty("goCore") && window.goCore.setLoaderFromExternal != undefined && startSpinner) {
     //   window.loading = setTimeout(() => {
@@ -371,14 +374,19 @@ class Launcher {
       }
     }
 
-    if (this.currentPage == "" || this.currentPage != newPage) {
-      window.unloadAll();
-      this.content.html(Html);
-      this.currentPage = newPage;
-      window.global.functions.pageStart();
-      window["Load_" + newPage].call(this);
-      window.global.functions.pageEnd();
-      callback();
+      if (this.currentPage == "" || this.currentPage != newPage) {
+        window.unloadAll();
+        this.content.html(Html);
+        this.currentPage = newPage;
+        window.global.functions.pageStart();
+        window["Load_" + newPage].call(this);
+        window.global.functions.pageEnd();
+        callback();
+      } else if (!leaveStateAlone) {
+        this.setPageState(State, callback);
+      } else if (leaveStateAlone) {
+        callback();
+      }
     } else {
       this.setPageState(State, callback);
     }
@@ -626,7 +634,10 @@ class Launcher {
         } else {
           page = partials[1];
         }
-        isNormalPage = (page != "roomModifyDevices" && page != "roomControl");
+        isNormalPage = true;
+        window.global.functions.forEach(window.global.functions.NonConformingPages(), (pageIter) => {
+          isNormalPage &= page != pageIter;
+        });
       }
     } catch(e) {}
 

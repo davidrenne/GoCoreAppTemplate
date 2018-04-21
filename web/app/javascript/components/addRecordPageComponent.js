@@ -27,7 +27,7 @@ export default function AddRecordPage(Component, Action, Tooltip){
 
         );
       } catch(e) {
-        return this.globs.ComponentError(this.getClassName(), e.message);
+        return this.globs.ComponentError("AddRecordPageComponent", e.message, e);
       }
     }
   }

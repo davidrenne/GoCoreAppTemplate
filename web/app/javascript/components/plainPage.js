@@ -12,7 +12,13 @@ class PlainPage extends BaseComponent {
   render() {
     try {
       this.logRender();
-      var title = <h1 style={{margin: '0em 0 .5em'}}><MuiThemeProvider muiTheme={MuiThemes.opposite}>{this.props.icon}</MuiThemeProvider> {this.props.title}</h1>;
+      var title = (this.props.headerElement == undefined) ?
+                <h1 style={{margin: '0em 0 .5em'}}><MuiThemeProvider muiTheme={MuiThemes.opposite}>{this.props.icon}</MuiThemeProvider> {this.props.title}</h1>
+                :
+                <span className="AlignerRight">
+                  <h1 style={{margin: '0em 0 .5em'}}><MuiThemeProvider muiTheme={MuiThemes.opposite}>{this.props.icon}</MuiThemeProvider> {this.props.title}</h1>
+                  <span>{this.props.headerElement}</span>
+                </span>;
 
       var breadCrumbs = "";
       if (this.props.breadCrumbs != undefined && this.props.breadCrumbs.length > 0){
@@ -38,7 +44,18 @@ class PlainPage extends BaseComponent {
           </ol>
         );
 
-        title = <div><span className="h1"><MuiThemeProvider muiTheme={MuiThemes.opposite}>{this.props.icon}</MuiThemeProvider> {this.props.title} </span><span style={{fontSize:22}}>{breadCrumbs}</span></div>;
+        title = <div><span className="h1"><MuiThemeProvider muiTheme={MuiThemes.opposite}>{this.props.icon}</MuiThemeProvider> {this.props.title} </span>
+                  {
+                    (this.props.headerElement == undefined) ?
+                    <span style={{fontSize:22}}>{breadCrumbs}</span>
+                    :
+                    <span className="Aligner">
+                      <span style={{fontSize:22}}>{breadCrumbs}</span>
+                      <span>{this.props.headerElement}</span>
+                    </span>
+                  }
+                </div>
+        ;
       }
 
       return (
@@ -53,7 +70,7 @@ class PlainPage extends BaseComponent {
           </GoCoreParentNode>
       );
     } catch(e) {
-      return this.globs.ComponentError(this.getClassName(), e.message);
+      return this.globs.ComponentError("PlainPage", e.message, e);
     }
   }
 }
@@ -63,7 +80,8 @@ PlainPage.propTypes = {
   title: React.PropTypes.string,
   showMenuPageTitle: React.PropTypes.bool,
   icon: React.PropTypes.element,
-  breadCrumbs: React.PropTypes.array
+  breadCrumbs: React.PropTypes.array,
+  headerElement: React.PropTypes.element
 };
 
 PlainPage.defaultProps = {

@@ -1,4 +1,6 @@
-
+/**
+ * Created by Dan on 12/5/16.
+ */
 import {React,
     BaseComponent,
     RaisedButton,
@@ -8,17 +10,17 @@ import {React,
     Col
   } from "../../globals/forms";
   import Loader from "./loader";
-  
-  class ImageUploaderStore extends BaseComponent {
+
+  class ImageUploaderStoreComponent extends BaseComponent {
     constructor(props, context) {
       super(props, context);
 
       this.changedImage = false;
+      this.unmounted = false;
 
       this.state = {
-        loaded: (this.props.value) ? true : false,
         cannotSubmit:false,
-        value:this.props.value
+        value: undefined
       }
 
       this.handleClearFile = () => {
@@ -44,36 +46,34 @@ import {React,
       };
 
     }
-  
+
     componentDidMount() {
-      this.subscriptionId = this.store.subscribe(this.props.collection, this.props.id, this.props.path,(data) => {this.handleValueChange(data)}, this.props.value ? false : true);
-      if (!this.props.value) {
-        this.store.getByPath({"collection":this.props.collection, 
-                              "id":this.props.id, 
-                              "path":this.props.path}, (data) => {
-          this.setState({loaded:true, value:data});
-        });
-      }
+      this.subscriptionId = this.store.subscribe(this.props.collection, this.props.id, this.props.path,(data) => {this.handleValueChange(data)}, true);
     }
-  
+
     componentWillUnmount() {
+      this.unmounted = true;
       this.store.unsubscribe(this.subscriptionId);
     }
-  
+
     handleValueChange(data) {
-      this.setState({value:data});
+      if (this.unmounted) {
+        return;
+      }
+      if (data == null) {
+        return;
+      }
+      if (data != this.state.value) {
+        this.setState({value:data});
+      }
     }
-  
+
     render() {
       try {
 
-        if (!this.state.loaded) {
-          return (<Loader/>);
-        }
-
         var image = (
           <Col xs={12} md={6} style={{padding:10}}>
-            <img src={"/fileObject/" + this.state.value + ((this.changedImage === true) ? "?" + new Date().getTime() : "")} 
+            <img src={"/fileObject/" + this.state.value + ((this.changedImage === true) ? "?" + new Date().getTime() : "")}
                  style={{width:this.props.width, height:this.props.height, objectFit:"contain"}} />
             <br/>
             <RaisedButton
@@ -111,17 +111,22 @@ import {React,
                   </div>
                 </FileUpload>
               </Col>
-              {image}              
+              {image}
             </Row>
           </span>
-          </span>               
+          </span>
         );
 
         return (
 
           <div>
-            {htmlUpload}
-            {this.state.cannotSubmit ? <LinearProgress color={deepOrange600} mode="indeterminate" /> : null}
+            <span>
+              {this.state.value == undefined? <Loader/>: null}
+              <span style={{display: this.state.value == undefined ? "none" : "block"}}>
+                {htmlUpload}
+                {this.state.cannotSubmit ? <LinearProgress color={deepOrange600} mode="indeterminate" /> : null}
+              </span>
+            </span>
           </div>
         );
       } catch(e) {
@@ -129,17 +134,15 @@ import {React,
       }
     }
   }
-  
-  
-  ImageUploaderStore.propTypes = {
+
+
+  ImageUploaderStoreComponent.propTypes = {
     collection:React.PropTypes.string,
     id:React.PropTypes.string,
     path:React.PropTypes.string,
-    value:React.PropTypes.string,
     height:React.PropTypes.any,
     width:React.PropTypes.any,
     defaultImage:React.PropTypes.any
   };
-  
-  export default ImageUploaderStore;
-  
+
+  export default ImageUploaderStoreComponent;

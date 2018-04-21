@@ -1,6 +1,6 @@
 import React from 'react';
 import Dialog from 'material-ui/Dialog';
-import FlatButton from 'material-ui/FlatButton';
+import RaisedButton from 'material-ui/RaisedButton';
 import BaseComponent from '../components/base';
 
 class ConfirmPopup extends BaseComponent {
@@ -14,7 +14,8 @@ class ConfirmPopup extends BaseComponent {
       pageData: null,
       areYouSureMessage: props.areYouSureMsg,
       actionSubmitLabel: (props.actionSubmitLabel) ? props.actionSubmitLabel : window.appContent.ConfirmPopupSubmit,
-      actionCancelLabel: (props.actionCancelLabel) ? props.actionCancelLabel : window.appContent.ConfirmPopupCancel
+      actionCancelLabel: (props.actionCancelLabel) ? props.actionCancelLabel : window.appContent.ConfirmPopupCancel,
+      actionOption3Label: (props.actionOption3Label) ? props.actionOption3Label : window.appContent.ConfirmPopupCancel
     };
 
     if (props.title) {
@@ -58,11 +59,22 @@ class ConfirmPopup extends BaseComponent {
       this.setComponentState({open: false});
     };
 
+    this.handleOption3Close = () => {
+      if (this.props.onOption3) {
+        this.props.onOption3();
+      }
+      this.setComponentState({open: false});
+    };
+
     this.handleCloseRules = (forceClose=true) => {
-      if (this.props.autoClose || forceClose) {
+      if (this.props.justClose){
         this.setComponentState({open: false});
-        if (this.props.onClose) {
-          this.props.onClose();
+      } else {
+        if (this.props.autoClose || forceClose) {
+          this.setComponentState({open: false});
+          if (this.props.onClose) {
+            this.props.onClose();
+          }
         }
       }
     };
@@ -87,6 +99,10 @@ class ConfirmPopup extends BaseComponent {
       changes.actionCancelLabel = nextProps.actionCancelLabel;
       isDifferent = true;
     }
+    if (nextProps.actionOption3Label != undefined && nextProps.actionOption3Label != this.state.actionOption3Label) {
+      changes.actionOption3Label = nextProps.actionOption3Label;
+      isDifferent = true;
+    }
     if (nextProps.open != undefined && nextProps.open != this.state.open) {
       changes.open = nextProps.open;
       isDifferent = true;
@@ -107,19 +123,29 @@ class ConfirmPopup extends BaseComponent {
       if (this.props.showActionButtons) {
         if (this.props.showActionCancel) {
           actions.push(
-              <FlatButton
+              <RaisedButton
                   label={this.state.actionCancelLabel}
                   primary={true}
-                  onTouchTap={() => {
+                  style={{marginLeft: 10}}
+                  onClick={() => {
                     this.handleClose(true);
                   }}
               />);
         }
         if (this.props.showActionSubmit) {
-          actions.push(<FlatButton
+          actions.push(<RaisedButton
             label={this.state.actionSubmitLabel}
             primary={true}
-            onTouchTap={this.handleComplete}
+            style={{marginLeft: 10}}
+            onClick={this.handleComplete}
+          />)
+        }
+        if (this.props.showActionOption3) {
+          actions.push(<RaisedButton
+            label={this.state.actionOption3Label}
+            secondary={true}
+            style={{marginLeft: 10}}
+            onClick={this.handleOption3Close}
           />)
         }
       }
@@ -147,7 +173,7 @@ class ConfirmPopup extends BaseComponent {
         </div>
       );
     } catch(e) {
-      return this.globs.ComponentError(this.getClassName(), e.message);
+      return this.globs.ComponentError("ConfirmPopup", e.message, e);
     }
   }
 }
@@ -159,11 +185,14 @@ ConfirmPopup.propTypes = {
   onSubmitFullControl: React.PropTypes.bool, // dont let it close automatically and apply your own stuff
   onSubmit: React.PropTypes.func.isRequired,
   autoClose: React.PropTypes.bool.isRequired,
+  justClose: React.PropTypes.bool,
   showActionButtons: React.PropTypes.bool,
   showActionSubmit: React.PropTypes.bool,
   showActionCancel: React.PropTypes.bool,
+  showActionOption3: React.PropTypes.bool,
   actionSubmitLabel: React.PropTypes.string,
   actionCancelLabel: React.PropTypes.string,
+  actionOption3Label: React.PropTypes.string,
   onClose: React.PropTypes.func,
   areYouSureMsg: React.PropTypes.node,
   popupHTML: React.PropTypes.node,
@@ -171,6 +200,7 @@ ConfirmPopup.propTypes = {
 
 ConfirmPopup.defaultProps = {
   onSubmitFullControl: false,
+  justClose: false,
   showActionCancel: true,
   showActionSubmit: true,
   showActionButtons: true,

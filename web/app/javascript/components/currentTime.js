@@ -36,7 +36,7 @@ class CurrentTime extends BaseComponent {
          </div>
        )
     } catch(e) {
-      return this.globs.ComponentError(this.getClassName(), e.message);
+      return this.globs.ComponentError("CurrentTime", e.message, e);
     }
   }
 }
