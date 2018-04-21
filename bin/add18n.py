@@ -10,6 +10,13 @@ key = key[:35]
 
 translation = sys.argv[3]
 
+blastIt = sys.argv[4]
+
+if translation[:1] == "{":
+    translation = translation[1:]
+
+if translation[len(translation)-1:len(translation)] == "}":
+    translation = translation[:len(translation)-1]
 gopath = os.getenv("GOPATH")
 controllers = "".join(open(gopath + '/src/github.com/DanielRenne/goCoreAppTemplate/controllers/constants.go', 'r').readlines())
 
@@ -24,12 +31,19 @@ if controllers.find(controller) > 0 and controller != "app":
 path = '/src/github.com/DanielRenne/goCoreAppTemplate/web/app/globalization/translations/' + app + '/en/US.json'
 translations = json.load(open(gopath + path, 'r'))
 fullString = translation.strip()
-if key not in translations:
+if blastIt == "0" and key not in translations:
     translations[key] = fullString
     json.dump(translations, open(gopath + path, 'w'), indent=4, sort_keys=True)
     jsCode = 'window.' + page + 'Content.' + key
     print 'floatingLabelText={' + jsCode + '}'
-    pyperclip.copy("{" + jsCode + "}")
+    try:
+        golang=False
+        if golang:
+            pyperclip.copy("queries.AppContent.GetTranslation(context, \"" + key + "\")")
+        else:
+            pyperclip.copy("{" + jsCode + "}")
+    except:
+        pass
 
     if app == "app":
         translationGoCode = gopath + '/src/github.com/DanielRenne/goCoreAppTemplate/queries/appTranslations.go'
@@ -41,4 +55,9 @@ if key not in translations:
             f.write(appContent)
             f.close()
 else:
+    try:
+	    jsCode = 'window.' + page + 'Content.' + key
+	    pyperclip.copy("{" + jsCode + "}")
+    except:
+        pass
     print "Translation exists " + key

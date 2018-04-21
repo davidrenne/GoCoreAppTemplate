@@ -6,6 +6,7 @@ GOWATCHRUNNING=0
 NC='\033[0m' # No Color
 GREEN="\[$(tput setaf 2)\]"
 pkill clear_npmlogs_and_check_errors
+echo "" >  $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/log/npmErrors.log
 echo "" >  $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/log/npm.log
 i=1
 while true; do

@@ -5,7 +5,27 @@ if [ $# -lt 2 ]; then
     echo 1>&2 "$0: not enough arguments to call createcrud"
     exit 2
 else
-    bash $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/bin/kill_all
+    gsed
+    ret=$?
+    if [[ "$ret" -eq 0 ]]; then
+        echo "gsed exists"
+    else
+        if [ "$(uname)" == "Darwin" ]; then
+            echo "You must have gsed installed for this to work:"
+            echo ""
+            echo "sudo port install gsed"
+            echo ""
+            echo "or homebrew"
+            echo ""
+            echo "sudo brew install gnu-sed"
+            exit 2
+        else
+            whereis=$(which sed)
+            cd /usr/bin/
+            ln -s "$whereis" gsed
+        fi
+    fi
+
     set -e
     GREEN="\[$(tput setaf 2)\]"
     NC='\033[0m' # No Color
@@ -56,31 +76,31 @@ else
     ret=$?
 
     if [[ "$ret" -eq 1 ]]; then
-        sed -i "/${UPPER_PARAMS2}/,+3d" "$GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/viewModel/viewModel.go"
+        gsed -i "/${UPPER_PARAMS2}/,+3d" "$GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/viewModel/viewModel.go"
     fi
     set -e
 
     # Remove viewmodels that are not needed
-    sed -i "/VIEWMODEL_$UPPER_PARAMS/,+3d" "$GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/viewModel/viewModel.go"
-    sed -i "/VIEWMODEL_${UPPER_PARAMS2}ADD/,+3d" "$GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/viewModel/viewModel.go"
+    gsed -i "/VIEWMODEL_$UPPER_PARAMS/,+3d" "$GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/viewModel/viewModel.go"
+    gsed -i "/VIEWMODEL_${UPPER_PARAMS2}ADD/,+3d" "$GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/viewModel/viewModel.go"
 
     if [[ "$3" != "nojs" ]]; then
-        sed -i "s/-CAPITALIZED-/${UPPER_PARAMS2}/g" "$GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/controllers/${1}PostController.go"
+        gsed -i "s/-CAPITALIZED-/${UPPER_PARAMS2}/g" "$GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/controllers/${1}PostController.go"
         # Update imports to include model
-        sed -i "s/\"encoding\/json\"/\"encoding\/json\"\n\t\"github.com\/DanielRenneFolder\/goCoreAppTemplate\/models\/v1\/model\"/g" "$GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/viewModel/${2}ListViewModel.go"
+        gsed -i "s/\"encoding\/json\"/\"encoding\/json\"\n\t\"github.com\/DanielRenneFolder\/goCoreAppTemplate\/models\/v1\/model\"/g" "$GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/viewModel/${2}ListViewModel.go"
     fi
 
-    sed -i "s/\"encoding\/json\"/\"encoding\/json\"\n\t\"github.com\/DanielRenneFolder\/goCoreAppTemplate\/models\/v1\/model\"/g" "$GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/viewModel/${2}ModifyViewModel.go"
+    gsed -i "s/\"encoding\/json\"/\"encoding\/json\"\n\t\"github.com\/DanielRenneFolder\/goCoreAppTemplate\/models\/v1\/model\"/g" "$GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/viewModel/${2}ModifyViewModel.go"
 
     if [[ "$3" != "nojs" ]]; then
 
         # Add in particular crud fields on a per view model basis
-        sed -i "s/\/\/AdditionalConstructs/\t$camelUpper \[\]model\.$camelSingularUpper                 \`json:\"$camelUpper\"\`\n\tWidgetList WidgetListUserControlsViewModel \`json:\"WidgetList\"\`\nFileUpload FileObject \`json:\"FileUpload\"\`\n\t\n\/\/AdditionalConstructs/g" "$GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/viewModel/${2}ListViewModel.go"
+        gsed -i "s/\/\/AdditionalConstructs/\t$camelUpper \[\]model\.$camelSingularUpper                 \`json:\"$camelUpper\"\`\n\tWidgetList WidgetListUserControlsViewModel \`json:\"WidgetList\"\`\nFileUpload FileObject \`json:\"FileUpload\"\`\n\t\n\/\/AdditionalConstructs/g" "$GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/viewModel/${2}ListViewModel.go"
 
-        sed -i "s/\/\/AdditionalConstructs/\tDeleted$camelUpper \[\]model\.$camelSingularUpper                 \`json:\"Deleted$camelUpper\"\`\n\t\n\/\/AdditionalConstructs/g" "$GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/viewModel/${2}ListViewModel.go"
+        gsed -i "s/\/\/AdditionalConstructs/\tDeleted$camelUpper \[\]model\.$camelSingularUpper                 \`json:\"Deleted$camelUpper\"\`\n\t\n\/\/AdditionalConstructs/g" "$GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/viewModel/${2}ListViewModel.go"
     fi
 
-    sed -i "s/\/\/AdditionalConstructs/\t$camelSingularUpper model\.$camelSingularUpper                 \`json:\"$camelSingularUpper\"\`\n\tFileUpload FileObject \`json:\"FileUpload\"\`\n\t\/\/AdditionalConstructs/g" "$GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/viewModel/${2}ModifyViewModel.go"
+    gsed -i "s/\/\/AdditionalConstructs/\t$camelSingularUpper model\.$camelSingularUpper                 \`json:\"$camelSingularUpper\"\`\n\tFileUpload FileObject \`json:\"FileUpload\"\`\n\t\/\/AdditionalConstructs/g" "$GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/viewModel/${2}ModifyViewModel.go"
 
     if [[ "$3" != "nojs" ]]; then
 
@@ -94,54 +114,54 @@ else
         cp "$GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/web/app/javascript/pages/template/crud/ModifyComponents.js" "$GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/web/app/javascript/pages/${2}Modify/${2}ModifyComponents.js"
 
         if [[ "$3" == "SettingsBar" ]]; then
-            sed -i "s/\/\/AdditionalConstructs/\tSettingsBar SettingsButtonBarViewModel \`json:\"SettingsBar\"\`\n\t\n\/\/AdditionalConstructs/g" "$GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/viewModel/${2}ListViewModel.go"
-            sed -i "s/\/\/AdditionalConstructs/\tSettingsBar SettingsButtonBarViewModel \`json:\"SettingsBar\"\`\n\t\n\/\/AdditionalConstructs/g" "$GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/viewModel/${2}ModifyViewModel.go"
+            gsed -i "s/\/\/AdditionalConstructs/\tSettingsBar SettingsButtonBarViewModel \`json:\"SettingsBar\"\`\n\t\n\/\/AdditionalConstructs/g" "$GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/viewModel/${2}ListViewModel.go"
+            gsed -i "s/\/\/AdditionalConstructs/\tSettingsBar SettingsButtonBarViewModel \`json:\"SettingsBar\"\`\n\t\n\/\/AdditionalConstructs/g" "$GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/viewModel/${2}ModifyViewModel.go"
 
             #uncomment code for settings bar
-            sed -i "s/\/\/vm.SettingsBar/vm.SettingsBar/g" "$GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/controllers/${1}GetController.go"
+            gsed -i "s/\/\/vm.SettingsBar/vm.SettingsBar/g" "$GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/controllers/${1}GetController.go"
 
             # Setup bool for common draw for settings button bar
-            sed -i "s/-PAGE_RENDER_MODE-/settings/g" "$GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/web/app/javascript/pages/${2}Add/${2}Add.js"
-            sed -i "s/-PAGE_RENDER_MODE-/settings/g" "$GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/web/app/javascript/pages/${2}Modify/${2}Modify.js"
-            sed -i "s/-PAGE_RENDER_MODE-/settings/g" "$GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/web/app/javascript/pages/${2}List/${2}List.js"
+            gsed -i "s/-PAGE_RENDER_MODE-/settings/g" "$GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/web/app/javascript/pages/${2}Add/${2}Add.js"
+            gsed -i "s/-PAGE_RENDER_MODE-/settings/g" "$GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/web/app/javascript/pages/${2}Modify/${2}Modify.js"
+            gsed -i "s/-PAGE_RENDER_MODE-/settings/g" "$GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/web/app/javascript/pages/${2}List/${2}List.js"
 
             # Add button bar needed 50 px offset for this list to be perfect on button bar pages
-            sed -i "s/-PAGE_RENDER_EXTRA-/\{\.\.\.this\.globs\.widgetListButtonBarOffset\(\)\}/g" "$GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/web/app/javascript/pages/${2}List/${2}ListComponents.js"
-            sed -i "s/-PAGE_RENDER_HEIGHT_WIDGETLIST-//g" "$GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/web/app/javascript/pages/${2}List/${2}ListComponents.js"
+            gsed -i "s/-PAGE_RENDER_EXTRA-/\{\.\.\.this\.globs\.widgetListButtonBarOffset\(\)\}/g" "$GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/web/app/javascript/pages/${2}List/${2}ListComponents.js"
+            gsed -i "s/-PAGE_RENDER_HEIGHT_WIDGETLIST-//g" "$GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/web/app/javascript/pages/${2}List/${2}ListComponents.js"
 
             bash $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/bin/add18n "app" "${camelSingularUpper}Add" "Add ${camelSingularUpper}"
             bash $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/bin/add18n "app" "${camelSingularUpper}List" "${camelUpper}"
             bash $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/bin/add18n "app" "${camelSingularUpper}Modify" "Modify ${camelSingularUpper}"
 
         else
-            sed -i "s/-PAGE_RENDER_MODE-/plain_page/g" "$GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/web/app/javascript/pages/${2}Add/${2}Add.js"
-            sed -i "s/-PAGE_RENDER_MODE-/plain_page/g" "$GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/web/app/javascript/pages/${2}Modify/${2}Modify.js"
-            sed -i "s/-PAGE_RENDER_MODE-/plain_page/g" "$GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/web/app/javascript/pages/${2}List/${2}List.js"
-            sed -i "s/-PAGE_RENDER_HEIGHT_WIDGETLIST-/offsetHeightToList\=\{92\}/g" "$GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/web/app/javascript/pages/${2}List/${2}ListComponents.js"
+            gsed -i "s/-PAGE_RENDER_MODE-/plain_page/g" "$GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/web/app/javascript/pages/${2}Add/${2}Add.js"
+            gsed -i "s/-PAGE_RENDER_MODE-/plain_page/g" "$GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/web/app/javascript/pages/${2}Modify/${2}Modify.js"
+            gsed -i "s/-PAGE_RENDER_MODE-/plain_page/g" "$GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/web/app/javascript/pages/${2}List/${2}List.js"
+            gsed -i "s/-PAGE_RENDER_HEIGHT_WIDGETLIST-/offsetHeightToList\=\{92\}/g" "$GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/web/app/javascript/pages/${2}List/${2}ListComponents.js"
 
             # Clear out code for extra configs
-            sed -i "s/-PAGE_RENDER_EXTRA-//g" "$GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/web/app/javascript/pages/${2}List/${2}ListComponents.js"
+            gsed -i "s/-PAGE_RENDER_EXTRA-//g" "$GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/web/app/javascript/pages/${2}List/${2}ListComponents.js"
         fi
 
         # Maybe loop later here....
 
-        sed -i "s/-CAPCAMEL-/$camelSingularUpper/g" $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/web/app/javascript/pages/${2}Modify/{"${2}ModifyComponents.js","${2}Modify.js"}
-        sed -i "s/-CAPITALIZED-/$UPPER_PARAMS2/g" $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/web/app/javascript/pages/${2}Modify/{"${2}ModifyComponents.js","${2}Modify.js"}
-        sed -i "s/-CAPCAMELPLURAL-/$camelUpper/g" $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/web/app/javascript/pages/${2}Modify/{"${2}ModifyComponents.js","${2}Modify.js"}
-        sed -i "s/-CAMEL-/$2/g" $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/web/app/javascript/pages/${2}Modify/{"${2}ModifyComponents.js","${2}Modify.js"}
-        sed -i "s/-CAMELPLURAL-/$1/g" $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/web/app/javascript/pages/${2}Modify/{"${2}ModifyComponents.js","${2}Modify.js"}
+        gsed -i "s/-CAPCAMEL-/$camelSingularUpper/g" $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/web/app/javascript/pages/${2}Modify/{"${2}ModifyComponents.js","${2}Modify.js"}
+        gsed -i "s/-CAPITALIZED-/$UPPER_PARAMS2/g" $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/web/app/javascript/pages/${2}Modify/{"${2}ModifyComponents.js","${2}Modify.js"}
+        gsed -i "s/-CAPCAMELPLURAL-/$camelUpper/g" $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/web/app/javascript/pages/${2}Modify/{"${2}ModifyComponents.js","${2}Modify.js"}
+        gsed -i "s/-CAMEL-/$2/g" $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/web/app/javascript/pages/${2}Modify/{"${2}ModifyComponents.js","${2}Modify.js"}
+        gsed -i "s/-CAMELPLURAL-/$1/g" $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/web/app/javascript/pages/${2}Modify/{"${2}ModifyComponents.js","${2}Modify.js"}
 
-        sed -i "s/-CAPCAMEL-/$camelSingularUpper/g" $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/web/app/javascript/pages/${2}List/{"${2}ListComponents.js","${2}List.js"}
-        sed -i "s/-CAPITALIZED-/$UPPER_PARAMS2/g" $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/web/app/javascript/pages/${2}List/{"${2}ListComponents.js","${2}List.js"}
-        sed -i "s/-CAPCAMELPLURAL-/$camelUpper/g" $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/web/app/javascript/pages/${2}List/{"${2}ListComponents.js","${2}List.js"}
-        sed -i "s/-CAMEL-/$2/g" $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/web/app/javascript/pages/${2}List/{"${2}ListComponents.js","${2}List.js"}
-        sed -i "s/-CAMELPLURAL-/$1/g" $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/web/app/javascript/pages/${2}List/{"${2}ListComponents.js","${2}List.js"}
+        gsed -i "s/-CAPCAMEL-/$camelSingularUpper/g" $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/web/app/javascript/pages/${2}List/{"${2}ListComponents.js","${2}List.js"}
+        gsed -i "s/-CAPITALIZED-/$UPPER_PARAMS2/g" $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/web/app/javascript/pages/${2}List/{"${2}ListComponents.js","${2}List.js"}
+        gsed -i "s/-CAPCAMELPLURAL-/$camelUpper/g" $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/web/app/javascript/pages/${2}List/{"${2}ListComponents.js","${2}List.js"}
+        gsed -i "s/-CAMEL-/$2/g" $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/web/app/javascript/pages/${2}List/{"${2}ListComponents.js","${2}List.js"}
+        gsed -i "s/-CAMELPLURAL-/$1/g" $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/web/app/javascript/pages/${2}List/{"${2}ListComponents.js","${2}List.js"}
 
-        sed -i "s/-CAPCAMEL-/$camelSingularUpper/g" $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/web/app/javascript/pages/${2}Add/{"${2}AddComponents.js","${2}Add.js"}
-        sed -i "s/-CAPITALIZED-/$UPPER_PARAMS2/g" $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/web/app/javascript/pages/${2}Add/{"${2}AddComponents.js","${2}Add.js"}
-        sed -i "s/-CAPCAMELPLURAL-/$camelUpper/g" $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/web/app/javascript/pages/${2}Add/{"${2}AddComponents.js","${2}Add.js"}
-        sed -i "s/-CAMEL-/$2/g" $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/web/app/javascript/pages/${2}Add/{"${2}AddComponents.js","${2}Add.js"}
-        sed -i "s/-CAMELPLURAL-/$1/g" $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/web/app/javascript/pages/${2}Add/{"${2}AddComponents.js","${2}Add.js"}
+        gsed -i "s/-CAPCAMEL-/$camelSingularUpper/g" $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/web/app/javascript/pages/${2}Add/{"${2}AddComponents.js","${2}Add.js"}
+        gsed -i "s/-CAPITALIZED-/$UPPER_PARAMS2/g" $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/web/app/javascript/pages/${2}Add/{"${2}AddComponents.js","${2}Add.js"}
+        gsed -i "s/-CAPCAMELPLURAL-/$camelUpper/g" $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/web/app/javascript/pages/${2}Add/{"${2}AddComponents.js","${2}Add.js"}
+        gsed -i "s/-CAMEL-/$2/g" $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/web/app/javascript/pages/${2}Add/{"${2}AddComponents.js","${2}Add.js"}
+        gsed -i "s/-CAMELPLURAL-/$1/g" $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/web/app/javascript/pages/${2}Add/{"${2}AddComponents.js","${2}Add.js"}
 
         bash $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/bin/add18n "${2}List" "ShowingAll${camelUpper}" "Showing All ${camelUpper}"
         bash $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/bin/add18n "${2}List" "Delete${camelSingularUpper}" "Delete ${2}"
