@@ -1,8 +1,14 @@
 package br
 
 import (
+	"encoding/json"
+	"fmt"
+	"reflect"
+	"strings"
+
 	"github.com/DanielRenne/GoCore/core/app"
 	"github.com/DanielRenne/GoCore/core/store"
+	"github.com/DanielRenne/GoCore/core/utils"
 )
 
 const (
@@ -64,7 +70,7 @@ func (storeBr) Broadcast(key string, id string, path string, x interface{}) {
 func (storeBr) Execute(path string, x interface{}, raw []byte) (y interface{}) {
 	defer func() {
 		if r := recover(); r != nil {
-			session_functions.VelocityLog("Error", "Panic at br->store.go->Execute:  "+fmt.Sprintf("%+v", r)+"  \nPath:  "+path+"\nValue:  "+fmt.Sprintf("%+v", x))
+			session_functions.Log("Error", "Panic at br->store.go->Execute:  "+fmt.Sprintf("%+v", r)+"  \nPath:  "+path+"\nValue:  "+fmt.Sprintf("%+v", x))
 			return
 		}
 	}()
@@ -105,7 +111,7 @@ func (storeBr) Execute(path string, x interface{}, raw []byte) (y interface{}) {
 		param := reflect.New(paramType)
 		err1 := json.Unmarshal(raw, param.Interface())
 		if err1 != nil {
-			session_functions.VelocityLog("br.Store.Execute", "Error parsing param: "+err1.Error())
+			session_functions.Log("br.Store.Execute", "Error parsing param: "+err1.Error())
 			return
 		}
 

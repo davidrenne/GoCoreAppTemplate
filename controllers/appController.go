@@ -32,6 +32,7 @@ import (
 	"github.com/DanielRenne/goCoreAppTemplate/scheduleEngine"
 	"github.com/DanielRenne/goCoreAppTemplate/settings"
 	"github.com/DanielRenne/goCoreAppTemplate/viewModel"
+	"github.com/DanielRenne/goCoreAppTemplate/sessionFunctions"
 	"github.com/gin-gonic/gin"
 	"github.com/mattn/go-isatty"
 	"xojoc.pw/useragent"

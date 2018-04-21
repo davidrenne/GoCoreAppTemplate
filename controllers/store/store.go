@@ -31,13 +31,16 @@ type storePostPayload struct {
 	ExcludeFilter map[string]interface{} `json:"ExcludeFilter"`
 	Joins         []string               `json:"Joins"`
 	Path          string                 `json:"Path"`
-	Value         interface{}            `json:"Value"`
+	ValueRaw      json.RawMessage        `json:"Value"`
+	Value         interface{}
 }
 
 //Parse will parse the json datastring for the GetRoomDevices.
 func (obj *storePostPayload) Parse(data string) {
 	json.Unmarshal([]byte(data), &obj)
+	json.Unmarshal(obj.ValueRaw, &obj.Value)
 }
+
 
 //Get returns an entity from a collection store.
 func (sc *StoreController) Get(context session_functions.RequestContext, state string, respond session_functions.ServerResponse) {
@@ -60,7 +63,7 @@ func (sc *StoreController) GetByPath(context session_functions.RequestContext, s
 	vm.Parse(state)
 
 	if vm.Collection == "GoCore" {
-		y := sc.processGoCore(vm.ID, vm.Path, vm.Value)
+		y := sc.processGoCore(vm)
 		respond(constants.PARAM_REDIRECT_NONE, constants.PARAM_SNACKBAR_MESSAGE_NONE, constants.PARAM_SNACKBAR_TYPE_ERROR, nil, constants.PARAM_TRANSACTION_ID_NONE, y)
 		return
 	}
@@ -111,7 +114,7 @@ func (sc *StoreController) Set(context session_functions.RequestContext, state s
 	vm.Parse(state)
 
 	if vm.Collection == "GoCore" {
-		y := sc.processGoCore(vm.ID, vm.Path, vm.Value)
+		y := sc.processGoCore(vm)
 		respond(constants.PARAM_REDIRECT_NONE, constants.PARAM_SNACKBAR_MESSAGE_NONE, constants.PARAM_SNACKBAR_TYPE_ERROR, nil, constants.PARAM_TRANSACTION_ID_NONE, y)
 		return
 	}
@@ -150,7 +153,8 @@ func (*StoreController) Append(context session_functions.RequestContext, state s
 	respond(constants.PARAM_REDIRECT_NONE, constants.PARAM_SNACKBAR_MESSAGE_NONE, constants.PARAM_SNACKBAR_TYPE_ERROR, nil, constants.PARAM_TRANSACTION_ID_NONE, x)
 }
 
-func (*StoreController) processGoCore(id string, path string, x interface{}) (y interface{}) {
+func (*StoreController) processGoCore(vm storePostPayload) (y interface{}) {
+
 	defer func() {
 		if r := recover(); r != nil {
 			session_functions.Log("Error", "Panic at store.go processGoCore:  "+fmt.Sprintf("%+v", r)+"  \nPath:  "+path+"\nValue:  "+fmt.Sprintf("%+v", x))
