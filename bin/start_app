@@ -1,3 +1,11 @@
+if [ ! -f "$GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/webConfig.json" ]; then
+    mkdir -p $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/log/plugins
+    cd $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/bin
+    chmod +x *
+fi
+
+cd $GOPATH
+go run src/github.com/DanielRenne/goCoreAppTemplate/buildgoCoreUpperAppTemplate/buildgoCoreUpperAppTemplate.go
 
 whoami=$(whoami)
 port=$(bash $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/bin/get_port_local)
@@ -8,6 +16,7 @@ else
 fi
 bash $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/bin/kill_go_watch
 
+set -e
 if [ ! -d "$GOPATH/src/github.com/DanielRenne/GoCore" ]; then
     say "installing go core"
     go get github.com/DanielRenne/GoCore/...
@@ -15,12 +24,7 @@ if [ ! -d "$GOPATH/src/github.com/DanielRenne/GoCore" ]; then
     getCore
     go install github.com/DanielRenne/GoCore/core/goCoreCreateApp
 fi
-
-if [ ! -f "$GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/webConfig.json" ]; then
-    mkdir -p $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/log/plugins
-    cd $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/bin
-    chmod +x *
-fi
+set +e
 
 if [ ! -d "$GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/web/app/node_modules" ]; then
     say "npm install starting"
