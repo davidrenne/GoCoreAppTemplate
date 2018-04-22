@@ -44,11 +44,11 @@ bash $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/bin/kill_go_watch
 set -e
 if [ ! -d "$GOPATH/src/github.com/DanielRenne/GoCore" ]; then
     say "installing go core"
-    go get github.com/DanielRenne/GoCore/... > /tmp/goCore1  2>&1
-    go install github.com/DanielRenne/GoCore/getCore > /tmp/goCore2  2>&1
+    go get github.com/DanielRenne/GoCore/...
+    go install github.com/DanielRenne/GoCore/getCore
     sleep 2
-    getCore > /tmp/goCore3  2>&1
-    go install github.com/DanielRenne/GoCore/core/goCoreCreateApp > /tmp/goCore4  2>&1
+    getCore
+    go install github.com/DanielRenne/GoCore/core/goCoreCreateApp
 fi
 
 if [ ! -d "$GOPATH/src/github.com/DanielRenne/GoCore/tools/appFiles/web" ]; then
