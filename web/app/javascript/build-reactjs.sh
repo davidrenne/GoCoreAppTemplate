@@ -1,6 +1,6 @@
 set -e
 cd ..
-webpack -p --config webpack-production.config.js
+webpack --config webpack-production.config.js
 
 cp lib/Material-Design-Iconic-Font.eot dist/javascript/
 cp lib/Material-Design-Iconic-Font.svg dist/javascript/
@@ -18,10 +18,6 @@ mv -f go-core-app.js.* ../dist/javascript/
 set +e
 rm ../dist/javascript/atlona-studio.js.map > /dev/null 2>&1
 set -e
-cp ../node_modules/react-intl-tel-input/dist/flags.png ../dist/css/
-cp ../node_modules/react-intl-tel-input/dist/flags@2x.png  ../dist/css/
-cp ../node_modules/react-intl-tel-input/dist/libphonenumber.js  ../dist/javascript/
-gzip -f ../dist/javascript/libphonenumber.js
 
 cp polyfills/polyfills.js  ../dist/javascript/polyfills.js
 cp Core.js ../dist/javascript/core.js
