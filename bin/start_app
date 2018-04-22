@@ -5,9 +5,12 @@ if [[ "$pth" == "" ]]; then
     exit 1
 fi
 
-npm version
+
+npm version > /dev/null  2>&1
 ret=$?
 if [[ "$ret" -eq 0 ]]; then
+    echo "npm install ok"
+else
     echo "You need to install npm"
     say "You need to install npm.  Exiting now"
     exit 1
