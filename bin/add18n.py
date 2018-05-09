@@ -60,4 +60,4 @@ else:
 	    pyperclip.copy("{" + jsCode + "}")
     except:
         pass
-    print "Translation exists " + key
+    print "TranslationExists"
