@@ -1,7 +1,7 @@
 set -e
 GREEN="\[$(tput setaf 2)\]"
 NC='\033[0m' # No Color
-cd $GOPATH
+cd $goCoreAppPath
 camel=$1
 camelUpper=$(echo $1 | python -c "data=raw_input();print data[:1].title() + data[1:]")
 #lower=$camel
@@ -9,7 +9,7 @@ upper=$(tr '[:lower:]' '[:upper:]' <<< "$camel")
 #if [[ "$1" =~ [A-Z] ]]; then
 #  lower="$camelUpper"
 #fi
-base=src/github.com/DanielRenne/goCoreAppTemplate/
+base=
 markup=web/app/markup/$camel/
 trans=web/app/globalization/translations/$camel/en
 controllerbase=controllers
@@ -61,13 +61,13 @@ if [[ "$2" == "crud_base" ]]; then
     gsed -i "s/-CAPCAMEL-/$camel3Upper/g" "$base$constantsbase/${camel3}.go"
     echo -e "Created ${GREEN}$base$constantsbase/${camel3}.go"
 
-    bash $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/bin/add18n "app" "${camel3Upper}DeleteSuccessful" "${camel3Upper} was deleted."
-    bash $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/bin/add18n "app" "${camel3Upper}DeleteMany" "Server ${camel2Upper} were deleted."
-    bash $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/bin/add18n "app" "Error${camel3Upper}Save" "Failed to save ${camel3Upper}."
-    bash $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/bin/add18n "app" "Error${camel3Upper}Delete" "Failed to delete ${camel3Upper}."
-    bash $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/bin/add18n "app" "${camel3Upper}SaveSuccess" "${camel3Upper} Saved Successfully."
-    bash $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/bin/add18n "app" "Error${camel3Upper}NoId" "No ${camel3Upper} Id submitted.  ${camel3Upper}  not found."
-    bash $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/bin/add18n "app" "Error${camel3Upper}NotFound" "Failed to find ${camel3Upper}."
+    bash $goCoreAppPath/bin/add18n "app" "${camel3Upper}DeleteSuccessful" "${camel3Upper} was deleted."
+    bash $goCoreAppPath/bin/add18n "app" "${camel3Upper}DeleteMany" "Server ${camel2Upper} were deleted."
+    bash $goCoreAppPath/bin/add18n "app" "Error${camel3Upper}Save" "Failed to save ${camel3Upper}."
+    bash $goCoreAppPath/bin/add18n "app" "Error${camel3Upper}Delete" "Failed to delete ${camel3Upper}."
+    bash $goCoreAppPath/bin/add18n "app" "${camel3Upper}SaveSuccess" "${camel3Upper} Saved Successfully."
+    bash $goCoreAppPath/bin/add18n "app" "Error${camel3Upper}NoId" "No ${camel3Upper} Id submitted.  ${camel3Upper}  not found."
+    bash $goCoreAppPath/bin/add18n "app" "Error${camel3Upper}NotFound" "Failed to find ${camel3Upper}."
 
     if [ ! -f "$base$controllerbase/${camel3}.go" ]; then
         cp $base$jspagebase/template/crud/BusinessRules "$base$controllerbase/${camel3}.go"
@@ -183,7 +183,7 @@ if [[ "$5" != "nojs" ]]; then
         echo "" >> $base$jsbase/App.js
         echo "import $camelUpper from './pages/$camel/$camel'" >> $base$jsbase/App.js
     fi
-    bash $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/bin/add18n app "Titles$camelUpper" "$camelUpper"
+    bash $goCoreAppPath/bin/add18n app "Titles$camelUpper" "$camelUpper"
     cd src/github.com/DanielRenne/goCoreAppTemplate
     if ([[ "$2" != "crud" ]] && [[ "$2" != "crud_base" ]]); then
         echo "320i9rj298r328j"
@@ -195,7 +195,7 @@ if [[ "$5" != "nojs" ]]; then
         git add -A $trans/*
         echo -e "${GREEN}Added git files in .git${NC}"
     fi
-    bash $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/bin/translation_seed "$1"
+    bash $goCoreAppPath/bin/translation_seed "$1"
     sleep 1
-    python $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/bin/translate_all.py "$1"
+    python $goCoreAppPath/bin/translate_all.py "$1"
 fi

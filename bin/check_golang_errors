@@ -1,18 +1,18 @@
 #!/bin/bash
-cd $GOPATH
+cd $goCoreAppPath
 RED='\033[0;31m'
 NC='\033[0m' # No Color
 GREEN="\[$(tput setaf 2)\]"
 
 say "Go Core App compiling"  > /dev/null 2>&1
-port=$(bash $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/bin/get_port_local)
+port=$(bash $goCoreAppPath/bin/get_port_local)
 for ((i=1;i<=45;i++));
 do
-   grep "goCoreAppTemplate Started" $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/log/app.log  > /dev/null 2>&1
+   grep "goCoreAppTemplate Started" $goCoreAppPath/log/app.log  > /dev/null 2>&1
    ret=$?
-   grep "Bootstraping of Users" $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/log/app.log  > /dev/null 2>&1
+   grep "Bootstraping of Users" $goCoreAppPath/log/app.log  > /dev/null 2>&1
    ret2=$?
-   grep "address already in use" $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/log/app.log | grep $port  > /dev/null 2>&1
+   grep "address already in use" $goCoreAppPath/log/app.log | grep $port  > /dev/null 2>&1
    ret3=$?
 
    if [[ "$ret3" -eq 0 ]]; then
@@ -28,7 +28,7 @@ do
        fi
        set -e
 
-       bash $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/bin/start_golang
+       bash $goCoreAppPath/bin/start_golang
        exit 1
    fi
 
@@ -39,9 +39,9 @@ do
      set -e
      i=100000
    else
-     grep "# github.com/" $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/log/app.log  > /dev/null 2>&1
+     grep "# github.com/" $goCoreAppPath/log/app.log  > /dev/null 2>&1
      ret=$?
-     grep ": expected" $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/log/app.log  > /dev/null 2>&1
+     grep ": expected" $goCoreAppPath/log/app.log  > /dev/null 2>&1
      ret2=$?
      echo -e "Golang compiling: (${RED}${i}${NC}) seconds"
 

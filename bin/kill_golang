@@ -1,6 +1,6 @@
 #!/bin/bash
 whoami=$(whoami)
-port=$(bash $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/bin/get_port_local)
+port=$(bash $goCoreAppPath/bin/get_port_local)
 if [[ "$whoami" == "root" ]] || [[ "$port" != "80" ]]; then
     pkill compile &
     ps -ax | grep "exe/goCoreAppTemplate" | awk '{print $1}' | xargs kill  > /dev/null 2>&1 &

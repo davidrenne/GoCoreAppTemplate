@@ -1,10 +1,10 @@
-bash $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/bin/kill_servers
+bash $goCoreAppPath/bin/kill_servers
 go install github.com/DanielRenne/goCoreAppTemplate
-cd $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/web/app/javascript
+cd $goCoreAppPath/web/app/javascript
 bash build.sh
-cd $GOPATH
-go build src/github.com/DanielRenne/goCoreAppTemplate/goCoreAppTemplate.go
-cd $GOPATH
+cd $goCoreAppPath
+go build goCoreAppTemplate.go
+cd $goCoreAppPath
 whoami=$(whoami)
 if [[ "$whoami" == "root" ]]; then
     goCoreAppTemplate

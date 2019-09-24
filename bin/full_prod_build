@@ -1,6 +1,6 @@
-bash $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/bin/kill_all
-bash $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/bin/build_full
-cd $GOPATH
+bash $goCoreAppPath/bin/kill_all
+bash $goCoreAppPath/bin/build_full
+cd $goCoreAppPath
 whoami=$(whoami)
 if [[ "$whoami" == "root" ]]; then
     goCoreAppTemplate

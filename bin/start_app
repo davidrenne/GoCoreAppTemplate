@@ -1,4 +1,4 @@
-pth=$GOPATH
+pth=$goCoreAppPath
 if [[ "$pth" == "" ]]; then
     echo "You have no GOPATH environment variable.  Please install go and set it before running this app"
     say "You have no GOPATH environment variable.  Please install go and set it before running this app.  Exiting now"
@@ -23,51 +23,51 @@ if [[ "$envNode" == "" ]]; then
     exit 1
 fi
 
-if [ ! -f "$GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/webConfig.json" ]; then
-    mkdir -p $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/log/plugins
-    cd $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/bin
+if [ ! -f "$goCoreAppPath/webConfig.json" ]; then
+    mkdir -p $goCoreAppPath/log/plugins
+    cd $goCoreAppPath/bin
     chmod +x *
 fi
 
-cd $GOPATH
-go run src/github.com/DanielRenne/goCoreAppTemplate/buildgoCoreUpperAppTemplate/buildgoCoreUpperAppTemplate.go
+cd $goCoreAppPath
+go run buildgoCoreUpperAppTemplate/buildgoCoreUpperAppTemplate.go
 
 whoami=$(whoami)
-port=$(bash $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/bin/get_port_local)
+port=$(bash $goCoreAppPath/bin/get_port_local)
 if [[ "$whoami" == "root" ]] || [[ "$port" != "80" ]]; then
     rm -rf /tmp/go-build* > /dev/null 2>&1
 else
     sudo rm -rf /tmp/go-build* > /dev/null 2>&1
 fi
-bash $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/bin/kill_go_watch
+bash $goCoreAppPath/bin/kill_go_watch
 
 set +e
 
-if [ ! -d "$GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/web/app/node_modules" ]; then
+if [ ! -d "$goCoreAppPath/web/app/node_modules" ]; then
     say "npm install starting"
-    cd $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/web/app
+    cd $goCoreAppPath/web/app
     #https://github.com/sass/node-sass/issues/1847
     #node-sass needs unsafe-perm
     npm install --unsafe-perm
     say "npm install ended"
 fi
 
-if [ ! -f "$GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/web/app/dist/javascript/go-core-app.js.gz" ]; then
+if [ ! -f "$goCoreAppPath/web/app/dist/javascript/go-core-app.js.gz" ]; then
     say "copy dist tar balls starting"
-    cd $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/web/app/javascript
+    cd $goCoreAppPath/web/app/javascript
     bash build.sh
     say "copy dist tar balls ending"
 fi
 
 
-echo "" > $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/log/app.log
-echo "" > $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/log/db.log
+echo "" > $goCoreAppPath/log/app.log
+echo "" > $goCoreAppPath/log/db.log
 echo "" > /tmp/go_watch.log
-echo "" > $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/log/npm.log
+echo "" > $goCoreAppPath/log/npm.log
 
 if [[ "$whoami" == "root" ]] || [[ "$port" != "80" ]]; then
-    rm $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/log/mongo.log
+    rm $goCoreAppPath/log/mongo.log
 else
-    sudo rm $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/log/mongo.log
+    sudo rm $goCoreAppPath/log/mongo.log
 fi
-bash $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/bin/dev
+bash $goCoreAppPath/bin/dev

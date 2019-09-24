@@ -1,12 +1,12 @@
 RED='\033[0;31m'
 NC='\033[0m' # No Color
 GREEN="\[$(tput setaf 2)\]"
-cd $GOPATH
+cd $goCoreAppPath
 echo ""
 echo ">>>>>>>>>>>>>>>>>>  Generating gocore models <<<<<<<<<<<<<<<<<<"
-bash $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/bin/model_build
-bash $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/bin/kill_servers
-cd $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/web/app
-npm start > $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/log/npm.log 2>&1 &
-bash $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/bin/go_core_app_run &
-bash $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/bin/clear_npmlogs_and_check_errors &
+bash $goCoreAppPath/bin/model_build
+bash $goCoreAppPath/bin/kill_servers
+cd $goCoreAppPath/web/app
+npm start > $goCoreAppPath/log/npm.log 2>&1 &
+bash $goCoreAppPath/bin/go_core_app_run &
+bash $goCoreAppPath/bin/clear_npmlogs_and_check_errors &

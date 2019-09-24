@@ -2,10 +2,10 @@
 set -e
 GREEN="\[$(tput setaf 2)\]"
 NC='\033[0m' # No Color
-cd $GOPATH
+cd $goCoreAppPath
 camel=$1
 camelUpper=$(echo $1 | python -c "data=raw_input();print data[:1].title() + data[1:]")
-base=src/github.com/DanielRenne/goCoreAppTemplate/
+base=
 markup=web/app/markup/$camel/
 trans=web/app/globalization/translations/$camel/en
 controllerbase=controllers
@@ -13,8 +13,6 @@ vmbase=viewModel
 jsbase=web/app/javascript
 jspagebase=$jsbase/pages
 js=$jspagebase/$camel
-
-cd src/github.com/DanielRenne/goCoreAppTemplate
 
 git rm -fr $trans
 rm -rf $trans
