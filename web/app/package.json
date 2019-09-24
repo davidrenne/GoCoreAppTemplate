@@ -5,6 +5,7 @@
   "author": "?",
   "license": "ISC",
   "dependencies": {
+    "classnames": "2.2.5",
     "css-loader": "0.23.1",
     "draft-convert": "1.4.6",
     "draft-js": "0.10.1",
