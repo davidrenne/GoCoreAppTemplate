@@ -41,20 +41,6 @@ else
 fi
 bash $GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/bin/kill_go_watch
 
-set -e
-if [ ! -d "$GOPATH/src/github.com/DanielRenne/GoCore" ]; then
-    say "installing go core"
-    go get github.com/DanielRenne/GoCore/...
-    go install github.com/DanielRenne/GoCore/getCore
-    sleep 2
-    getCore
-    go install github.com/DanielRenne/GoCore/core/goCoreCreateApp
-fi
-
-if [ ! -d "$GOPATH/src/github.com/DanielRenne/GoCore/tools/appFiles/web" ]; then
-   getCore
-fi
-
 set +e
 
 if [ ! -d "$GOPATH/src/github.com/DanielRenne/goCoreAppTemplate/web/app/node_modules" ]; then
