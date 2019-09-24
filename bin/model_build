@@ -2,7 +2,7 @@
 cd $goCoreAppPath
 bash $goCoreAppPath/bin/kill_golang
 echo ">>>>>>>>>>>>>>>>>>  Generating gocore models <<<<<<<<<<<<<<<<<<" >> $goCoreAppPath/log/db.log
-/usr/local/go/bin/go run src/github.com/DanielRenne/goCoreAppTemplate/buildgoCoreUpperAppTemplate/buildgoCoreUpperAppTemplate.go >> $goCoreAppPath/log/db.log
+/usr/local/go/bin/go run buildgoCoreUpperAppTemplate/buildgoCoreUpperAppTemplate.go >> $goCoreAppPath/log/db.log
 ret=$?
 echo "-----$ret----"
 

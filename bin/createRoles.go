@@ -21,9 +21,9 @@ import (
 
 func main() {
 	log.SetOutput(ioutil.Discard)
-	os.Chdir(os.Getenv("GOPATH"))
+	os.Chdir(os.Getenv("goCoreAppPath"))
 	outputNewRoles := true
-	app.Initialize("src/github.com/DanielRenne/goCoreAppTemplate", "webConfig.json")
+	app.Initialize(os.Getenv("goCoreAppPath"), "webConfig.json")
 	settings.Initialize()
 	dbServices.Initialize()
 	log.SetOutput(ioutil.Discard)

@@ -7,7 +7,7 @@ from language_contant import languages
 pattern = sys.argv[1]
 blastKey = sys.argv[2]
 
-files = glob.glob(os.getenv("GOPATH") + '/src/github.com/DanielRenne/goCoreAppTemplate/web/app/globalization/translations/' + pattern + '/en/US.json')
+files = glob.glob(os.getenv("goCoreAppPath") + '/web/app/globalization/translations/' + pattern + '/en/US.json')
 
 for file in files:
     parts = file.split("/")

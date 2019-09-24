@@ -1,7 +1,7 @@
 pth=$goCoreAppPath
 if [[ "$pth" == "" ]]; then
-    echo "You have no GOPATH environment variable.  Please install go and set it before running this app"
-    say "You have no GOPATH environment variable.  Please install go and set it before running this app.  Exiting now"
+    echo "You have no $goCoreAppPath environment variable.  Please set this variable to the location of the app"
+    say "You have no $goCoreAppPath environment variable.  Please set this variable to the location of the app.  Exiting now"
     exit 1
 fi
 

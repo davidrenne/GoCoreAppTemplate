@@ -49,7 +49,7 @@ func main() {
 	//vm.ButtonBar.Config.OtherTabSelected = append(vm.ButtonBar.Config.OtherTabSelected, viewModel.SETTINGS_CONST_ROLE)
 
 	//Manually set this if you want your table to include foreign keys as "fields" for import and widget lists
-	app.Initialize("src/github.com/DanielRenne/goCoreAppTemplate", "webConfig.json")
+	app.Initialize(os.Getenv("goCoreAppPath"), "webConfig.json")
 	settings.Initialize()
 	dbServices.Initialize()
 	allowIdFieldsToBeShown := false
@@ -220,7 +220,7 @@ func main() {
       //AdditionalPages`, strings.ToUpper(lowerCamel), strings.ToUpper(lowerCamel)))
 	}
 
-	serverSettings.Initialize(os.Getenv("GOPATH")+"/src/github.com/DanielRenne/goCoreAppTemplate", "webConfig.json")
+	serverSettings.Initialize(os.Getenv("goCoreAppPath"), "webConfig.json")
 	post := serverSettings.APP_LOCATION + "/controllers/" + capCamelPlural + "PostController.go"
 	vm := serverSettings.APP_LOCATION + "/viewModel/" + capCamelPlural + "ImportViewModel.go"
 	list := serverSettings.APP_LOCATION + "/web/app/javascript/pages/" + lowerCamel + "List/" + lowerCamel + "ListComponents.js"

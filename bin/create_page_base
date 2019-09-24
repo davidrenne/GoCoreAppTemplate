@@ -184,7 +184,7 @@ if [[ "$5" != "nojs" ]]; then
         echo "import $camelUpper from './pages/$camel/$camel'" >> $base$jsbase/App.js
     fi
     bash $goCoreAppPath/bin/add18n app "Titles$camelUpper" "$camelUpper"
-    cd src/github.com/DanielRenne/goCoreAppTemplate
+    cd $goCoreAppPath
     if ([[ "$2" != "crud" ]] && [[ "$2" != "crud_base" ]]); then
         echo "320i9rj298r328j"
         git add -A $controllerbase/*

@@ -1,2 +1,2 @@
-cd "${GOPATH}${1}"
+cd "${goCoreAppPath}${1}"
 go fmt ./...

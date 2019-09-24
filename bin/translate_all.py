@@ -17,7 +17,7 @@ log = False
 
 bullshitTestFlag = "!"
 #
-files = glob.glob(os.getenv("GOPATH") + '/src/github.com/DanielRenne/goCoreAppTemplate/web/app/globalization/translations/' + pattern + '/en/US.json')
+files = glob.glob(os.getenv("goCoreAppPath") + '/web/app/globalization/translations/' + pattern + '/en/US.json')
 
 for file in files:
     if log:
