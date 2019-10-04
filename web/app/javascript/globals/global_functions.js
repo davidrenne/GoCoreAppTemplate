@@ -159,127 +159,69 @@ globals.isArray = function(pointer) {
   return (pointer != undefined && pointer != null && Array.isArray(pointer))
 };
 
+globals.filter = function(pointer, mapFunc) {
+  if (globals.isArray(pointer)) {
+    return pointer.filter(mapFunc);
+  }
+};
+
+globals.reduce = function(pointer, mapFunc) {
+  if (globals.isArray(pointer)) {
+    return pointer.reduce(mapFunc);
+  }
+};
+
+globals.forEach = function(pointer, mapFunc) {
+  if (globals.isArray(pointer)) {
+    pointer.forEach(mapFunc);
+  } else if (globals.typeof(pointer) == "Object") {
+    Object.keys(pointer).forEach((key) =>{
+      mapFunc(pointer[key], key);
+    });
+  }
+};
+
 globals.length = function(pointer) {
   if (globals.isArray(pointer)) {
     return pointer.length;
+  } else if (globals.typeof(pointer) == "Object") {
+    return Object.keys(pointer).length;
   } else {
     return 0;
   }
 };
 
-globals.map = function(pointer, mapFunc, elseFunc) {
-  if (elseFunc == undefined) {
-    elseFunc = () => {
-      return []
-    }
-  }
+globals.map = function(pointer, mapFunc) {
   if (globals.isArray(pointer)) {
     return pointer.map(mapFunc);
-  } else {
-    return elseFunc();
+  } else if (globals.typeof(pointer) == "Object") {
+    return Object.keys(pointer).map((key) =>{
+      return mapFunc(pointer[key], key);
+    });
   }
 };
 
-globals.filter = function(pointer, mapFunc, elseFunc) {
-  if (elseFunc == undefined) {
-    elseFunc = () => {
-      return []
-    }
-  }
+globals.filter = function(pointer, mapFunc) {
   if (globals.isArray(pointer)) {
     return pointer.filter(mapFunc);
-  } else {
-    return elseFunc();
   }
 };
 
-globals.reduce = function(pointer, mapFunc, elseFunc) {
-  if (elseFunc == undefined) {
-    elseFunc = () => {
-      return []
-    }
-  }
-  if (globals.isArray(pointer)) {
-    return pointer.reduce(mapFunc);
-  } else {
-    return elseFunc();
-  }
-};
-
-globals.forEach = function(pointer, mapFunc, elseFunc) {
-  if (elseFunc == undefined) {
-    elseFunc = () => {
-      return []
-    }
-  }
-  if (globals.isArray(pointer)) {
-    pointer.forEach(mapFunc);
-  }
-};
-
-
-globals.filter = function(pointer, mapFunc, elseFunc) {
-  if (elseFunc == undefined) {
-    elseFunc = () => {
-      return []
-    }
-  }
-  if (globals.isArray(pointer)) {
-    return pointer.filter(mapFunc);
-  } else {
-    return elseFunc();
-  }
-};
-
-globals.filter = function(pointer, mapFunc, elseFunc) {
-  if (elseFunc == undefined) {
-    elseFunc = () => {
-      return []
-    }
-  }
-  if (globals.isArray(pointer)) {
-    return pointer.filter(mapFunc);
-  } else {
-    return elseFunc();
-  }
-};
-
-globals.findIndex = function(pointer, mapFunc, elseFunc) {
-  if (elseFunc == undefined) {
-    elseFunc = () => {
-      return []
-    }
-  }
+globals.findIndex = function(pointer, mapFunc) {
   if (globals.isArray(pointer)) {
     return pointer.findIndex(mapFunc);
-  } else {
-    return elseFunc();
   }
 };
 
-globals.reduceRight = function(pointer, mapFunc, elseFunc) {
-  if (elseFunc == undefined) {
-    elseFunc = () => {
-      return []
-    }
-  }
+globals.reduceRight = function(pointer, mapFunc) {
   if (globals.isArray(pointer)) {
     return pointer.reduceRight(mapFunc);
-  } else {
-    return elseFunc();
   }
 };
 
-globals.some = function(pointer, mapFunc, elseFunc) {
-  if (elseFunc == undefined) {
-    elseFunc = () => {
-      return []
-    }
-  }
+globals.some = function(pointer, mapFunc) {
   if (globals.isArray(pointer)) {
     return pointer.some(mapFunc);
-  } else {
-    return elseFunc();
   }
 };
 
