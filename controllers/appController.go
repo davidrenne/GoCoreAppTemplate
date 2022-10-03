@@ -8,6 +8,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"net"
 	"os"
 	"runtime/debug"
 	"strings"
@@ -17,7 +18,8 @@ import (
 
 	"net/http"
 	"reflect"
-
+	
+	"github.com/DanielRenne/GoCore/core/dbServices"
 	"github.com/DanielRenne/GoCore/core"
 	"github.com/DanielRenne/GoCore/core/app"
 	"github.com/DanielRenne/GoCore/core/extensions"
@@ -304,6 +306,21 @@ func AppIndex(c *gin.Context) (htmlContent string) {
 			return
 		}
 	}()
+	// Show mongo restart page if it cannot dial to port
+	dialer, _ := dbServices.GetMongoDialInfo()
+	conn, err := net.Dial("tcp", dialer.Addrs[0])
+	if err != nil {
+		htmlContent = `
+			<span style="color: red">
+				<h2>
+					An error occurred and this application cannot run due to mongo database being down.<br/><br/> 
+					Error description: ` + err.Error() + `<br/><br/>
+				</h2> 
+			</span>
+			`
+		return
+	}
+	conn.Close()
 
 	markupData, _, err := readProductionCachedFile(settings.WebUI + "/app/index.htm")
 
