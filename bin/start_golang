@@ -7,13 +7,16 @@ VERSION=$(bash $goCoreAppPath/bin/get_version_local)
 PRODUCTNAME=$(bash $goCoreAppPath/bin/get_product_name_local)
 port=$(bash $goCoreAppPath/bin/get_port_local)
 if [[ "$port" != "80" ]]; then
-    nohup /usr/local/go/bin/go run -ldflags "-s -X github.com/DanielRenne/goCoreAppTemplate/settings.Version=${VERSION} -X github.com/DanielRenne/goCoreAppTemplate/settings.ProductName=${PRODUCTNAME}" goCoreAppTemplate.go > $goCoreAppPath/log/app.log 2>&1 &
+	go build -ldflags "-s -X github.com/DanielRenne/goCoreAppTemplate/settings.Version=${VERSION} -X github.com/DanielRenne/goCoreAppTemplate/settings.ProductName=${PRODUCTNAME}" goCoreAppTemplate.go
+	./goCoreAppTemplate >$goCoreAppPath/log/app.log 2>&1 &
 else
-    whoami=$(whoami)
-    if [[ "$whoami" == "root" ]]; then
-        nohup /usr/local/go/bin/go run -ldflags "-s -X github.com/DanielRenne/goCoreAppTemplate/settings.Version=${VERSION} -X github.com/DanielRenne/goCoreAppTemplate/settings.ProductName=${PRODUCTNAME}" goCoreAppTemplate.go > $goCoreAppPath/log/app.log 2>&1 &
-    else
-        nohup sudo /usr/local/go/bin/go run -ldflags "-s -X github.com/DanielRenne/goCoreAppTemplate/settings.Version=${VERSION} -X github.com/DanielRenne/goCoreAppTemplate/settings.ProductName=${PRODUCTNAME}" goCoreAppTemplate.go > $goCoreAppPath/log/app.log 2>&1 &
-    fi
+	whoami=$(whoami)
+	if [[ "$whoami" == "root" ]]; then
+		go build -ldflags "-s -X github.com/DanielRenne/goCoreAppTemplate/settings.Version=${VERSION} -X github.com/DanielRenne/goCoreAppTemplate/settings.ProductName=${PRODUCTNAME}" goCoreAppTemplate.go
+		./goCoreAppTemplate >$goCoreAppPath/log/app.log 2>&1 &
+	else
+		go build -ldflags "-s -X github.com/DanielRenne/goCoreAppTemplate/settings.Version=${VERSION} -X github.com/DanielRenne/goCoreAppTemplate/settings.ProductName=${PRODUCTNAME}" goCoreAppTemplate.go
+		sudo ./goCoreAppTemplate >$goCoreAppPath/log/app.log 2>&1 &
+	fi
 fi
 bash $goCoreAppPath/bin/check_golang_errors &

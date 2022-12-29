@@ -1,25 +1,25 @@
 #!/bin/bash
 bash $goCoreAppPath/bin/kill_servers
-    gsed
-    ret=$?
-    if [[ "$ret" -eq 0 ]]; then
-        echo "gsed exists"
-    else
-        if [ "$(uname)" == "Darwin" ]; then
-            echo "You must have gsed installed for this to work:"
-            echo ""
-            echo "sudo port install gsed"
-            echo ""
-            echo "or homebrew"
-            echo ""
-            echo "sudo brew install gnu-sed"
-            exit 2
-        else
-            whereis=$(which sed)
-            cd /usr/bin/
-            ln -s "$whereis" gsed
-        fi
-    fi
+gsed
+ret=$?
+if [[ "$ret" -eq 0 ]]; then
+	echo "gsed exists"
+else
+	if [ "$(uname)" == "Darwin" ]; then
+		echo "You must have gsed installed for this to work:"
+		echo ""
+		echo "sudo port install gsed"
+		echo ""
+		echo "or homebrew"
+		echo ""
+		echo "sudo brew install gnu-sed"
+		exit 2
+	else
+		whereis=$(which sed)
+		cd /usr/bin/
+		ln -s "$whereis" gsed
+	fi
+fi
 
 set -e
 GREEN="\[$(tput setaf 2)\]"
@@ -30,7 +30,7 @@ echo -e "${GREEN}Formatting golang!${NC}"
 set +e
 bash $goCoreAppPath/bin/format
 cd $goCoreAppPath
-go run bin/createRoles.go
+go run bin/createRoles/main.go
 echo -e "${GREEN}!!!!!!!!!!!!!!!!!!!!${NC}"
 echo -e "${GREEN}      All Done      ${NC}"
 echo -e "${GREEN}!!!!!!!!!!!!!!!!!!!!${NC}"
