@@ -10,8 +10,7 @@ import (
 
 	"github.com/DanielRenne/GoCore/core"
 	"github.com/DanielRenne/GoCore/core/extensions"
-	"github.com/DanielRenne/goCoreAppTemplate/sessionFunctions"
-	sigar "github.com/cloudfoundry/gosigar"
+	session_functions "github.com/DanielRenne/goCoreAppTemplate/sessionFunctions"
 	"github.com/pkg/errors"
 )
 
@@ -19,14 +18,7 @@ var serverToolsSync *sync.RWMutex
 var updateAvailable bool
 
 func init() {
-	Server.mem = sigar.Mem{}
-	Server.swap = sigar.Swap{}
 	serverToolsSync = &sync.RWMutex{}
-}
-
-type Server_Br struct {
-	mem  sigar.Mem
-	swap sigar.Swap
 }
 
 type Version struct {
@@ -152,21 +144,7 @@ func setUpdateAvailable(available bool) {
 	return
 }
 
-func (self Server_Br) formatSize(val uint64) uint64 {
-	return val / 1024
-}
-
-func (self Server_Br) TotalMemory() uint64 {
-	self.mem.Get()
-	return self.formatSize(self.mem.Total)
-}
-
-func (self Server_Br) UsedMemeory() uint64 {
-	self.mem.Get()
-	return self.formatSize(self.mem.Total)
-}
-
-//GetOSVersion Returns the OS Version
+// GetOSVersion Returns the OS Version
 func GetOSVersion() (version string) {
 
 	if runtime.GOOS == "linux" {

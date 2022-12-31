@@ -1,73 +1,71 @@
 pth=$goCoreAppPath
 if [[ "$pth" == "" ]]; then
-    echo "You have no $goCoreAppPath environment variable.  Please set this variable to the location of the app"
-    say "You have no $goCoreAppPath environment variable.  Please set this variable to the location of the app.  Exiting now"
-    exit 1
+	echo "You have no $goCoreAppPath environment variable.  Please set this variable to the location of the app"
+	say "You have no $goCoreAppPath environment variable.  Please set this variable to the location of the app.  Exiting now"
+	exit 1
 fi
 
-
-npm version > /dev/null  2>&1
+npm version >/dev/null 2>&1
 ret=$?
 if [[ "$ret" -eq 0 ]]; then
-    echo "npm install ok"
+	echo "npm install ok"
 else
-    echo "You need to install npm"
-    say "You need to install npm.  Exiting now"
-    exit 1
+	echo "You need to install npm"
+	say "You need to install npm.  Exiting now"
+	exit 1
 fi
 
 envNode=$NODE_ENV
 if [[ "$envNode" == "" ]]; then
-    echo "Set NODE_ENV environment to development"
-    say "Set NODE_ENV environment to development.  Exiting now"
-    exit 1
+	echo "Set NODE_ENV environment to development"
+	say "Set NODE_ENV environment to development.  Exiting now"
+	exit 1
 fi
 
 if [ ! -f "$goCoreAppPath/webConfig.json" ]; then
-    mkdir -p $goCoreAppPath/log/plugins
-    cd $goCoreAppPath/bin
-    chmod +x *
+	mkdir -p $goCoreAppPath/log/plugins
+	cd $goCoreAppPath/bin
+	chmod +x *
 fi
 
 cd $goCoreAppPath
-go run buildgoCoreUpperAppTemplate/buildgoCoreUpperAppTemplate.go
+buildgoCoreUpperAppTemplate
 
 whoami=$(whoami)
 port=$(bash $goCoreAppPath/bin/get_port_local)
 if [[ "$whoami" == "root" ]] || [[ "$port" != "80" ]]; then
-    rm -rf /tmp/go-build* > /dev/null 2>&1
+	rm -rf /tmp/go-build* >/dev/null 2>&1
 else
-    sudo rm -rf /tmp/go-build* > /dev/null 2>&1
+	sudo rm -rf /tmp/go-build* >/dev/null 2>&1
 fi
 bash $goCoreAppPath/bin/kill_go_watch
 
 set +e
 
 if [ ! -d "$goCoreAppPath/web/app/node_modules" ]; then
-    say "npm install starting"
-    cd $goCoreAppPath/web/app
-    #https://github.com/sass/node-sass/issues/1847
-    #node-sass needs unsafe-perm
-    npm install --unsafe-perm
-    say "npm install ended"
+	say "npm install starting"
+	cd $goCoreAppPath/web/app
+	#https://github.com/sass/node-sass/issues/1847
+	#node-sass needs unsafe-perm
+	npm install --unsafe-perm
+	say "npm install ended"
 fi
 
 if [ ! -f "$goCoreAppPath/web/app/dist/javascript/go-core-app.js.gz" ]; then
-    say "copy dist tar balls starting"
-    cd $goCoreAppPath/web/app/javascript
-    bash build.sh
-    say "copy dist tar balls ending"
+	say "copy dist tar balls starting"
+	cd $goCoreAppPath/web/app/javascript
+	bash build.sh
+	say "copy dist tar balls ending"
 fi
 
-
-echo "" > $goCoreAppPath/log/app.log
-echo "" > $goCoreAppPath/log/db.log
-echo "" > /tmp/go_watch.log
-echo "" > $goCoreAppPath/log/npm.log
+echo "" >$goCoreAppPath/log/app.log
+echo "" >$goCoreAppPath/log/db.log
+echo "" >/tmp/go_watch.log
+echo "" >$goCoreAppPath/log/npm.log
 
 if [[ "$whoami" == "root" ]] || [[ "$port" != "80" ]]; then
-    rm $goCoreAppPath/log/mongo.log
+	rm $goCoreAppPath/log/mongo.log
 else
-    sudo rm $goCoreAppPath/log/mongo.log
+	sudo rm $goCoreAppPath/log/mongo.log
 fi
 bash $goCoreAppPath/bin/dev

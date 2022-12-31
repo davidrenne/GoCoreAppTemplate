@@ -2,10 +2,10 @@
 whoami=$(whoami)
 port=$(bash $goCoreAppPath/bin/get_port_local)
 if [[ "$whoami" == "root" ]] || [[ "$port" != "80" ]]; then
-    pkill compile &
-    ps -ax | grep "exe/goCoreAppTemplate" | awk '{print $1}' | xargs kill  > /dev/null 2>&1 &
+	pkill compile &
+	ps -ax | grep "./goCoreAppTemplate" | awk '{print $1}' | xargs kill >/dev/null 2>&1 &
 else
-    sudo pkill compile &
-    ps -ax | grep "exe/goCoreAppTemplate" | awk '{print $1}' | xargs sudo kill  > /dev/null 2>&1 &
+	sudo pkill compile &
+	ps -ax | grep "./goCoreAppTemplate" | awk '{print $1}' | xargs sudo kill >/dev/null 2>&1 &
 fi
 say "server dead"

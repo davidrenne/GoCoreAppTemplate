@@ -5,9 +5,8 @@ import (
 	"runtime/debug"
 	"time"
 
-	"github.com/DanielRenne/GoCore/core"
+	"github.com/DanielRenne/GoCore/core/cron"
 	"github.com/DanielRenne/goCoreAppTemplate/scheduleEngine"
-	"github.com/DanielRenne/goCoreAppTemplate/sessionFunctions"
 )
 
 func Start() {
@@ -20,11 +19,11 @@ func Start() {
 			return
 		}
 	}()
-	go core.CronJobs.RegisterRecurring(core.CRON_TOP_OF_30_SECONDS, ClearLogs)
-	go core.CronJobs.RegisterRecurring(core.CRON_TOP_OF_HOUR, ClearDebugMemory)
-	go core.CronJobs.RegisterRecurring(core.CRON_TOP_OF_HOUR, DeleteImageHistory)
-	go core.CronJobs.RegisterRecurring(core.CRON_TOP_OF_SECOND, FlushLogs)
-	go core.CronJobs.RegisterRecurring(core.CRON_TOP_OF_SECOND, scheduleEngine.Trigger)
-	go core.CronJobs.RegisterRecurring(core.CRON_TOP_OF_SECOND, BroadcastTime)
+	go cron.RegisterRecurring(cron.CronTopOf30Seconds, ClearLogs)
+	go cron.RegisterRecurring(cron.CronTopOfHour, ClearDebugMemory)
+	go cron.RegisterRecurring(cron.CronTopOfHour, DeleteImageHistory)
+	go cron.RegisterRecurring(cron.CronTopOfSecond, FlushLogs)
+	go cron.RegisterRecurring(cron.CronTopOfSecond, scheduleEngine.Trigger)
+	go cron.RegisterRecurring(cron.CronTopOfSecond, BroadcastTime)
 	go startup()
 }
