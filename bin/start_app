@@ -29,7 +29,7 @@ if [ ! -f "$goCoreAppPath/webConfig.json" ]; then
 fi
 
 cd $goCoreAppPath
-buildgoCoreUpperAppTemplate
+modelBuildgoCoreUpperAppTemplate
 
 whoami=$(whoami)
 port=$(bash $goCoreAppPath/bin/get_port_local)

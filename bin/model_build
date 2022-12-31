@@ -1,8 +1,7 @@
 #!/bin/bash
 cd $goCoreAppPath
-bash $goCoreAppPath/bin/kill_golang
 echo ">>>>>>>>>>>>>>>>>>  Generating gocore models <<<<<<<<<<<<<<<<<<" >>$goCoreAppPath/log/db.log
-buildgoCoreUpperAppTemplate >>$goCoreAppPath/log/db.log
+modelBuildgoCoreUpperAppTemplate >>$goCoreAppPath/log/db.log
 ret=$?
 echo "-----$ret----"
 
