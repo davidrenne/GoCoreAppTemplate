@@ -7,6 +7,7 @@ import (
 
 	"github.com/DanielRenne/GoCore/core/cron"
 	"github.com/DanielRenne/goCoreAppTemplate/scheduleEngine"
+	session_functions "github.com/DanielRenne/goCoreAppTemplate/sessionFunctions"
 )
 
 func Start() {
